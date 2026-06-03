@@ -1,0 +1,31 @@
+<div class="container mt-5">
+  
+  @if (!estaLogueado) {
+    <form (ngSubmit)="onSubmit()" class="border p-4 rounded shadow">
+      <h2 class="mb-4">Iniciar Sesión</h2>
+      
+      <div class="mb-3">
+        <label class="form-label">Email address</label>
+        <input [(ngModel)]="loginData.correo" name="correo" type="email" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input [(ngModel)]="loginData.contrasena" name="contrasena" type="password" class="form-control" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Entrar</button>
+    </form>
+  }
+
+  @else {
+    <div class="p-5 bg-light border rounded">
+      <h1>¡Bienvenido!</h1>
+      <p>Has accedido correctamente al sistema privado.</p>
+      <p>No hay nada jaja salu2</p>
+      
+      <button class="btn btn-danger" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  }
+
+</div>
