@@ -1,31 +1,77 @@
-<div class="container mt-5">
-  
-  @if (!estaLogueado) {
-    <form (ngSubmit)="onSubmit()" class="border p-4 rounded shadow">
-      <h2 class="mb-4">Iniciar Sesión</h2>
-      
-      <div class="mb-3">
-        <label class="form-label">Email address</label>
-        <input [(ngModel)]="loginData.correo" name="correo" type="email" class="form-control" required>
-      </div>
+<div class="login-wrapper">
+  <div class="container">
+    <div class="row justify-content-center w-100 m-0">
+      <div class="col-12 col-sm-10 col-md-7 col-lg-5 col-xl-4">
+        
+        @if (mensajeError) {
+          <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-3 border-0" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>¡Error!</strong> {{ mensajeError }}
+            <button type="button" class="btn-close" (click)="limpiarError()" aria-label="Close"></button>
+          </div>
+        }
 
-      <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input [(ngModel)]="loginData.contrasena" name="contrasena" type="password" class="form-control" required>
-      </div>
+        @if (!estaLogueado) {
+          <div class="card border-0 shadow-lg login-card">
+            <div class="card-body p-4 p-sm-5">
+              
+              <div class="text-center mb-4">
+                <div class="logo-container shadow-sm mb-3">
+                  <img src="favicon.ico" alt="Logo Helpdesk" class="login-logo">
+                </div>
+                <h2 class="fw-bold text-dark m-0">Helpdesk</h2>
+                <small class="text-muted">Ingresa tus credenciales para continuar</small>
+              </div>
 
-      <button type="submit" class="btn btn-primary">Entrar</button>
-    </form>
-  }
-  @else {
-    <div class="p-5 bg-light border rounded">
-      <h1>¡Bienvenido!</h1>
-      <p>Has accedido correctamente al sistema privado.</p>
-      <p>No hay nada jaja salu2</p>
-      
-      <a href="/tecnico" class="btn btn-success me-2">Ir al Dashboard Técnico</a>
-      <button class="btn btn-danger" (click)="cerrarSesion()">Cerrar Sesión</button>
+              <form (ngSubmit)="onSubmit()" autocomplete="off">
+                
+                <div class="mb-3">
+                  <label class="form-label fw-semibold text-secondary">Correo Electrónico</label>
+                  <div class="input-group">
+                    <input [(ngModel)]="loginData.correo" 
+                           name="correo" 
+                           type="email" 
+                           class="form-control form-control-lg custom-input" 
+                           placeholder="nombre@correo.com"
+                           required>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label fw-semibold text-secondary">Contraseña</label>
+                  <div class="input-group">
+                    <input [(ngModel)]="loginData.contrasena" 
+                           name="contrasena" 
+                           type="password" 
+                           class="form-control form-control-lg custom-input" 
+                           placeholder="••••••••"
+                           required>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm btn-ingresar">
+                  Iniciar Sesión
+                </button>
+              </form>
+
+            </div>
+          </div>
+        } 
+        
+        @else {
+          <div class="card border-0 shadow-lg text-center p-5 bg-white login-card">
+            <div class="card-body">
+              <div class="text-success mb-3 fs-1">✔</div>
+              <h1 class="fw-bold text-dark mb-3">¡Bienvenido!</h1>
+              <p class="text-muted mb-4">Has accedido correctamente al sistema privado.</p>
+              <button class="btn btn-danger btn-lg w-100 fw-bold" (click)="cerrarSesion()">
+                Cerrar Sesión
+              </button>
+            </div>
+          </div>
+        }
+
+      </div>
     </div>
-  }
-
+  </div>
 </div>
