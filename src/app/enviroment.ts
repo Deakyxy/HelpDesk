@@ -7,4 +7,4 @@ firebase: {
   messagingSenderId: "526102042939",
   appId: "1:526102042939:web:a4c27399450ac463af7f1e"
 }
-}
+} 

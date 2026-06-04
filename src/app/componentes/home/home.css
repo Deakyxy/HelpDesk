@@ -1,5 +1,71 @@
+/* Fondo degradado moderno en pantalla completa */
+.login-wrapper {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ajustes del contenedor de Bootstrap */
 .container {
-  display: grid;
-  place-items: center;     
-  height: 100px;           
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Tarjeta principal estilizada */
+.login-card {
+  border-radius: 16px !important;
+  background-color: #ffffff;
+}
+
+/* Contenedor circular para el ícono/logo */
+.logo-container {
+  width: 70px;
+  height: 70px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #eaeaea;
+}
+
+/* Imagen del favicon ajustada dentro del círculo */
+.login-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+/* Inputs con transiciones suaves y focus azul elegante */
+.custom-input {
+  border-radius: 10px !important;
+  border: 1px solid #ced4da;
+  font-size: 1rem !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.custom-input:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15) !important;
+}
+
+/* Botón de ingresar estilizado */
+.btn-ingresar {
+  border-radius: 10px !important;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.btn-ingresar:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3) !important;
+}
+
+.btn-ingresar:active {
+  transform: translateY(0);
 }
