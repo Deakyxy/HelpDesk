@@ -1,0 +1,294 @@
+<div class="dashboard">
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <div class="brand-dot"></div>
+      <span>HelpDesk</span>
+      <span class="navbar-sep">|</span>
+      <span class="navbar-section">Panel Técnico</span>
+    </div>
+    <div class="navbar-user">
+      <div class="avatar tecnico">{{ usuario.nombre[0].toUpperCase() }}</div>
+      <span class="user-name">{{ usuario.nombre }}</span>
+      <span class="user-role tecnico">Técnico</span>
+      <button class="btn-logout" (click)="cerrarSesion()" title="Cerrar sesión">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <span class="stat-num stat-rojo">{{ contarEstado('ABIERTO') }}</span>
+      <span class="stat-label">Abiertos</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num stat-amarillo">{{ contarEstado('EN_PROGRESO') }}</span>
+      <span class="stat-label">En Progreso</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num stat-naranja">{{ contarEstado('PENDIENTE_CLIENTE') }}</span>
+      <span class="stat-label">Pend. Cliente</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num stat-verde">{{ contarEstado('CERRADO') }}</span>
+      <span class="stat-label">Cerrados</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num stat-gris">{{ equipos.length }}</span>
+      <span class="stat-label">Equipos</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar">
+    <button class="tab-btn" [class.active]="tabActual === 'tickets'" (click)="tabActual = 'tickets'">
+      🎫 Cola de Tickets
+      <span class="tab-count">{{ tickets.length }}</span>
+    </button>
+    <button class="tab-btn" [class.active]="tabActual === 'equipos'" (click)="tabActual = 'equipos'">
+      🖥️ Gestión de Equipos
+      <span class="tab-count">{{ equipos.length }}</span>
+    </button>
+  </div>
+
+  <main class="main-content">
+
+    <!-- ============ TAB TICKETS ============ -->
+    @if (tabActual === 'tickets') {
+
+      <!-- Filtros -->
+      <div class="filtros-bar">
+        @for (f of filtrosDisponibles; track f.valor) {
+          <button class="filtro-btn" [class.active]="filtroTicket === f.valor" (click)="filtroTicket = $any(f.valor)">
+            {{ f.etiqueta }}
+          </button>
+        }
+      </div>
+
+      @if (ticketsFiltrados.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">🎫</div>
+          <h3>Sin tickets</h3>
+          <p>No hay tickets con este estado.</p>
+        </div>
+      } @else {
+        <div class="tabla-tickets">
+          <div class="tabla-header">
+            <span>Equipo / Título</span>
+            <span>Cliente</span>
+            <span>Estado</span>
+            <span>Fecha</span>
+            <span>Acciones</span>
+          </div>
+          @for (t of ticketsFiltrados; track t.id) {
+            <div class="tabla-row" [class]="'estado-' + t.estado">
+              <div class="col-titulo">
+                <span class="ticket-equipo-label">{{ t.equipoNombre }}</span>
+                <span class="ticket-titulo-text">{{ t.titulo }}</span>
+              </div>
+              <div class="col-cliente">{{ t.creadoPorNombre }}</div>
+              <div class="col-estado">
+                <span class="estado-badge estado-{{ t.estado }}">{{ etiquetaEstado(t.estado) }}</span>
+              </div>
+              <div class="col-fecha">{{ formatearFecha(t.creadoEn) }}</div>
+              <div class="col-acciones">
+                @if (t.estado === 'ABIERTO' || t.estado === 'RECHAZADO') {
+                  <button class="btn-atender" (click)="atenderTicket(t)">⚡ Atender</button>
+                }
+                @if (t.estado === 'EN_PROGRESO') {
+                  <button class="btn-ver" (click)="verDetalle(t)">✏️ Actualizar</button>
+                }
+                @if (t.estado === 'PENDIENTE_CLIENTE' || t.estado === 'CERRADO') {
+                  <button class="btn-ver secundario" (click)="verDetalle(t)">👁 Ver</button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- ============ TAB EQUIPOS ============ -->
+    @if (tabActual === 'equipos') {
+      <div class="equipos-toolbar">
+        <h2 class="section-title">Inventario de Hardware</h2>
+        <button class="btn-nuevo" (click)="abrirNuevoEquipo()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clip-rule="evenodd"/>
+          </svg>
+          Nuevo Equipo
+        </button>
+      </div>
+
+      @if (equipos.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">🖥️</div>
+          <h3>Sin equipos registrados</h3>
+          <p>Agrega el primer equipo al inventario.</p>
+        </div>
+      } @else {
+        <div class="tabla-equipos">
+          <div class="tabla-header equipo-header">
+            <span>Nombre</span>
+            <span>Tipo</span>
+            <span>Marca / Modelo</span>
+            <span>N° Serie</span>
+            <span>Asignado a</span>
+            <span>Ubicación</span>
+            <span>Acciones</span>
+          </div>
+          @for (eq of equipos; track eq.id) {
+            <div class="tabla-row equipo-row">
+              <div class="col-nombre-eq">
+                <span class="equipo-tipo-mini">{{ eq.tipo }}</span>
+                {{ eq.nombre }}
+              </div>
+              <div>{{ eq.tipo }}</div>
+              <div>{{ eq.marca }} {{ eq.modelo }}</div>
+              <div class="monospace">{{ eq.numeroSerie }}</div>
+              <div>{{ eq.asignadoNombre || '—' }}</div>
+              <div>{{ eq.ubicacion }}</div>
+              <div class="col-acciones-eq">
+                <button class="btn-edit" (click)="abrirEditarEquipo(eq)">✏️</button>
+                <button class="btn-del"  (click)="eliminarEquipo(eq.id!)">🗑️</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+  </main>
+
+  <!-- ========== MODAL: Detalle de Ticket ========== -->
+  @if (ticketDetalle) {
+    <div class="modal-backdrop" (click)="ticketDetalle = null">
+      <div class="modal-card grande" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <span class="modal-equipo-label">{{ ticketDetalle.equipoNombre }}</span>
+            <h2>{{ ticketDetalle.titulo }}</h2>
+          </div>
+          <button class="modal-close" (click)="ticketDetalle = null">✕</button>
+        </div>
+
+        <div class="detalle-grid">
+          <div class="detalle-info">
+            <p class="detalle-desc">{{ ticketDetalle.descripcion }}</p>
+
+            <div class="detalle-meta">
+              <div><span class="meta-label">Cliente</span> {{ ticketDetalle.creadoPorNombre }}</div>
+              <div><span class="meta-label">Estado</span>
+                <span class="estado-badge estado-{{ ticketDetalle.estado }}">{{ etiquetaEstado(ticketDetalle.estado) }}</span>
+              </div>
+              <div><span class="meta-label">Creado</span> {{ formatearFecha(ticketDetalle.creadoEn) }}</div>
+              @if (ticketDetalle.asignadoNombre) {
+                <div><span class="meta-label">Técnico</span> {{ ticketDetalle.asignadoNombre }}</div>
+              }
+            </div>
+
+            @if (ticketDetalle.estado === 'EN_PROGRESO') {
+              <div class="field-group">
+                <label for="comentarioTecnico">Comentario / Diagnóstico</label>
+                <textarea id="comentarioTecnico" [(ngModel)]="comentarioTexto" rows="3"
+                  placeholder="Describe qué revisaste, qué encontraste y qué hiciste..."></textarea>
+              </div>
+              <button class="btn-terminar" (click)="marcarTerminado()" [disabled]="guardandoEstado">
+                @if (guardandoEstado) { <span class="spinner"></span> Guardando... }
+                @else { ✅ Marcar como Terminado }
+              </button>
+            }
+          </div>
+
+          <!-- Historial -->
+          <div class="historial">
+            <h3 class="historial-title">Historial</h3>
+            <div class="historial-lista">
+              @for (h of ticketDetalle.historial; track h.fecha) {
+                <div class="historial-entry">
+                  <div class="historial-dot estado-dot-{{ h.estado }}"></div>
+                  <div class="historial-content">
+                    <span class="historial-estado">{{ etiquetaEstado(h.estado) }}</span>
+                    <span class="historial-nota">{{ h.nota }}</span>
+                    <span class="historial-meta">{{ h.autor }} · {{ formatearFecha(h.fecha) }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ========== MODAL: Formulario Equipo ========== -->
+  @if (mostrarFormEquipo) {
+    <div class="modal-backdrop" (click)="mostrarFormEquipo = false">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ modoEdicion ? 'Editar Equipo' : 'Nuevo Equipo' }}</h2>
+          <button class="modal-close" (click)="mostrarFormEquipo = false">✕</button>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group">
+            <label>Nombre del equipo</label>
+            <input [(ngModel)]="formEquipo.nombre" name="nombre" placeholder="Ej: Laptop HP 15" />
+          </div>
+          <div class="field-group">
+            <label>Tipo</label>
+            <select [(ngModel)]="formEquipo.tipo" name="tipo">
+              <option value="">Seleccionar...</option>
+              <option>Laptop</option>
+              <option>Desktop</option>
+              <option>Impresora</option>
+              <option>Servidor</option>
+              <option>Monitor</option>
+              <option>Tablet</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Marca</label>
+            <input [(ngModel)]="formEquipo.marca" name="marca" placeholder="HP, Dell, Lenovo..." />
+          </div>
+          <div class="field-group">
+            <label>Modelo</label>
+            <input [(ngModel)]="formEquipo.modelo" name="modelo" placeholder="EliteBook 840 G8" />
+          </div>
+          <div class="field-group">
+            <label>Número de Serie</label>
+            <input [(ngModel)]="formEquipo.numeroSerie" name="serie" placeholder="SN12345678" />
+          </div>
+          <div class="field-group">
+            <label>Ubicación</label>
+            <input [(ngModel)]="formEquipo.ubicacion" name="ubicacion" placeholder="Oficina 3B, Piso 2..." />
+          </div>
+          <div class="field-group full-width">
+            <label>Asignado a (cliente)</label>
+            <select [(ngModel)]="formEquipo.asignadoA" name="asignadoA">
+              <option value="">Sin asignar</option>
+              @for (c of clientes; track c.uid) {
+                <option [value]="c.uid">{{ c.nombre }} — {{ c.correo }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancelar" (click)="mostrarFormEquipo = false">Cancelar</button>
+          <button class="btn-crear" (click)="guardarEquipo()"
+            [disabled]="!formEquipo.nombre || !formEquipo.tipo">
+            {{ modoEdicion ? 'Guardar cambios' : 'Crear Equipo' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
