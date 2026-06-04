@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Firestore, collection, query, where, getDocs } from '@angular/fire/firestore';
+import { Router } from '@angular/router'; 
 
 @Component({
   selector: 'app-home',
@@ -12,11 +13,11 @@ import { Firestore, collection, query, where, getDocs } from '@angular/fire/fire
 })
 export class HomeComponent {
   private firestore = inject(Firestore);
+  private router = inject(Router); 
 
-  // Estado de la sesión
   estaLogueado: boolean = false;
-  
-  // Objeto para los datos del formulario
+  mensajeError: string = ""; // 1. DECLARAMOS LA VARIABLE PARA EL CONTENIDO DEL ERROR
+
   loginData = {
     correo: "",
     contrasena: ""
@@ -24,37 +25,46 @@ export class HomeComponent {
 
   async onSubmit() {
     try {
-      // 1. Referencia a la colección 'Login'
+      this.mensajeError = ""; // Limpiamos cualquier error previo al dar clic
+
       const loginCollection = collection(this.firestore, 'Login');
-      
-      // 2. Crear consulta para buscar el usuario por su correo
       const q = query(loginCollection, where('correo', '==', this.loginData.correo));
-      
-      // 3. Ejecutar la búsqueda
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        // Tomamos el primer documento que coincida
         const userData = querySnapshot.docs[0].data();
 
-        // 4. Validar si la contraseña coincide con la de la BD
-        if (userData['contrasena'] === this.loginData.contrasena) {
-          console.log("Acceso concedido");
-          this.estaLogueado = true;
-        } else {
-          alert("Contraseña incorrecta");
+       if (userData['contrasena'] === this.loginData.contrasena) {
+  console.log("Acceso concedido");
+  this.estaLogueado = true; // Con esto basta para que el HTML cambie de vista
+  // Borramos la línea del router.navigate
+    }
+else {
+          // 2. ASIGNAMOS EL TEXTO SI LA CONTRASEÑA ESTÁ MAL
+          this.mensajeError = "La contraseña que ingresaste es incorrecta.";
+          console.log("Contraseña incorrecta");
         }
       } else {
-        alert("Usuario no encontrado");
+        // 3. ASIGNAMOS EL TEXTO SI EL CORREO NO EXISTE
+        this.mensajeError = "El correo electrónico no está registrado en el sistema.";
+        console.log("Usuario no encontrado");
       }
     } catch (error) {
-      console.error("Error al validar:", error);
-      alert("Hubo un problema al conectar con la base de datos");
+      this.mensajeError = "Ocurrió un error inesperado al conectar con el servidor.";
+      console.error("Error en el login:", error);
     }
   }
 
   cerrarSesion() {
     this.estaLogueado = false;
-    this.loginData = { correo: "", contrasena: "" };
+    this.loginData.correo = "";
+    this.loginData.contrasena = "";
+    this.mensajeError = "";
+    console.log("Sesión cerrada");
+  }
+
+  // 4. FUNCIÓN PARA QUE LA "X" DE LA ALERTA BONITA BORRE EL CUADRO ROJO
+  limpiarError() {
+    this.mensajeError = "";
   }
 }
