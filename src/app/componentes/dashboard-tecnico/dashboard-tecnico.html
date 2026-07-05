@@ -1,0 +1,19 @@
+<nav class="navbar bg-body-tertiary shadow border-0">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold">Bienvenido Tecnico {{ usuario.nombres }} {{ usuario.apellidos }}!!!</a>
+    <div><button class="btn btn-danger" (click)="cerrarSesion()">Cerrar Sesión</button></div>
+  </div>
+  
+</nav>
+
+<div class="container mt-4 shadow border-0 p-4" style="border-radius: 20px; background-color: #f8f9fa;">
+  
+  <div class="d-flex flex-column flex-sm-row justify-content-between gap-3">
+    <button class="btn btn-info text-white custom-btn fw-semibold">
+      Ver mis solicitudes
+    </button>
+    <button class="btn btn-warning custom-btn fw-semibold">
+      Crear solicitud
+    </button>
+  </div>
+</div>
