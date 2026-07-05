@@ -1,9 +1,8 @@
 <nav class="navbar bg-body-tertiary shadow border-0">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold">Bienvenido Tecnico {{ usuario.nombres }} {{ usuario.apellidos }}!!!</a>
+    <a class="navbar-brand fw-bold">Bienvenido, {{ usuario.nombres }} {{ usuario.apellidos }}</a>
     <div><button class="btn btn-danger" (click)="cerrarSesion()">Cerrar Sesión</button></div>
   </div>
-  
 </nav>
 
 <div class="container mt-4 shadow border-0 p-4" style="border-radius: 20px; background-color: #f8f9fa;">
