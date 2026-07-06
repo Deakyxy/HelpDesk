@@ -3,6 +3,7 @@ import { HomeComponent } from './componentes/home/home';
 import { DashboardTecnicoComponent } from './componentes/dashboard-tecnico/dashboard-tecnico';
 import { DashboardUsuarioComponent } from './componentes/dashboard-usuario/dashboard-usuario'; 
 import { Firestore, collection, getDocs, DocumentData, QueryDocumentSnapshot, Timestamp } from '@angular/fire/firestore';
+import { DashboardAdminComponent } from './componentes/dashboard-admin/dashboard-admin';
 
 export const routes: Routes = [
   {
@@ -16,5 +17,9 @@ export const routes: Routes = [
   {
     path: 'panel-usuario',
     component: DashboardUsuarioComponent
+  },
+  {
+    path: 'admin',
+    component: DashboardAdminComponent
   }
 ];
