@@ -16,6 +16,8 @@ export class DashboardTecnicoComponent {
   private firestore = inject(Firestore);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
+  ticketsPendientes: any[] = [];
+  tecnicos: any[] = [];
   usuario = new Usuario();
 
   constructor(){
