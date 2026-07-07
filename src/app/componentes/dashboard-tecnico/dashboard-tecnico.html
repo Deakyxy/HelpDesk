@@ -17,7 +17,7 @@
           <button class="btn text-white fw-bold px-4 py-2" style="background-color: #00d4ff; border-radius: 8px;" (click)="mostrarTablas = !mostrarTablas">
             Ver mis solicitudes
           </button>
-          <button class="btn btn-primary fw-bold px-4 py-2" style="border-radius: 8px;">
+          <button type="button" class="btn btn-primary fw-bold px-4 py-2" style="border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#modalNuevoTicket">
             Crear solicitud
           </button>
         </div>
@@ -85,6 +85,37 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalNuevoTicket" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border: 2px solid #0d6efd; border-radius: 15px; overflow: hidden;">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold" id="tituloModal">Detalles del Problema</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-primary">Título del Problema</label>
+          <input type="text" class="form-control" [(ngModel)]="nuevoTicket.titulo" placeholder="Ej. PC no da video">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-primary">Área</label>
+          <input type="text" class="form-control" [(ngModel)]="nuevoTicket.area" placeholder="Ej. Sistemas, Finanzas...">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-primary">Comentario / Detalles</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="nuevoTicket.comentario" placeholder="Describe qué pasó..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary fw-bold" (click)="crearTicket()" data-bs-dismiss="modal">
+          Enviar a Soporte
+        </button>
+      </div>
     </div>
   </div>
 </div>

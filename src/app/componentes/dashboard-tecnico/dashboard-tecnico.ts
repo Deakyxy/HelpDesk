@@ -1,7 +1,7 @@
 import { Component, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Firestore, collection, query, where, collectionData, doc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, collection, where, query, collectionData, addDoc, doc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { Usuario } from '../home/home';
 
@@ -19,6 +19,12 @@ export class DashboardTecnicoComponent {
   
   usuario = new Usuario();
   mostrarTablas: boolean = false;
+
+    nuevoTicket = {
+    titulo: '',
+    area: '',
+    comentario: ''
+  };
   
   tareasActivas: any[] = [];
   tareasHistorial: any[] = [];
@@ -53,6 +59,33 @@ export class DashboardTecnicoComponent {
       });
     }
   }
+
+    async crearTicket() {
+      if (!this.nuevoTicket.titulo || !this.nuevoTicket.area || !this.nuevoTicket.comentario) {
+        alert('Por favor, llena todos los campos del formulario.');
+        return;
+      }
+  
+      try {
+        const ticketsCollection = collection(this.firestore, "Tickets");
+        
+        await addDoc(ticketsCollection, {
+          titulo: this.nuevoTicket.titulo,
+          area: this.nuevoTicket.area,
+          comentario: this.nuevoTicket.comentario,
+          estado: "pendiente",
+          id_tecnico: "",
+          id_creador: this.usuario.idusuario,
+          nombre_creador: `${this.usuario.nombres} ${this.usuario.apellidos}`.trim()
+        });
+  
+        alert('¡Tu solicitud ha sido enviada al administrador!');
+        this.nuevoTicket = { titulo: '', area: '', comentario: '' }; 
+  
+      } catch (error) {
+        alert("Hubo un error al crear el ticket.");
+      }
+    }
 
   async resolverTicket(idTicket: string) {
     try {
