@@ -16,8 +16,9 @@ export class DashboardAdminComponent {
   private firestore = inject(Firestore);
   private router = inject(Router);
 
-  ticketsPendientes: any[] = [];
   tecnicos: any[] = [];
+  ticketsActivos: any[] = [];
+  ticketsHistorial: any[] = [];
 
   constructor() {
     let loginCollection = collection(this.firestore, "Login");
@@ -28,51 +29,40 @@ export class DashboardAdminComponent {
     });
     
     let ticketsCollection = collection(this.firestore, "Tickets");
-    let qTickets = query(ticketsCollection, where("estado", "==", "pendiente"));
     
-    collectionData(qTickets, { idField: 'id' }).subscribe((datos: any[]) => {
-      this.ticketsPendientes = datos;
+    collectionData(ticketsCollection, { idField: 'id' }).subscribe((datos: any[]) => {
+      this.ticketsActivos = datos.filter(t => t.estado === 'pendiente' || t.estado === 'asignado' || t.estado === 'por_cerrar');
+      this.ticketsHistorial = datos.filter(t => t.estado === 'resuelto');
     });
   }
 
   async asignar(idTicket: string, idTecnico: string) {
-  // 1. Validar que tengamos ambos identificadores
-  if (!idTicket) {
-    console.error("El ID del ticket es indefinido o inválido.");
-    alert("Error interno: No se pudo identificar el ticket.");
-    return;
-  }
+    if (!idTicket || !idTecnico) {
+      alert('Por favor, selecciona un técnico de la lista.');
+      return;
+    }
 
-  if (!idTecnico) {
-    alert('Por favor, selecciona un técnico de la lista.');
-    return;
-  }
+    const tecnicoSeleccionado = this.tecnicos.find(t => t.id === idTecnico);
+    let nombreCompleto = 'Técnico Asignado';
+    
+    if (tecnicoSeleccionado) {
+      const nombres = tecnicoSeleccionado.nombres || '';
+      const apellidos = tecnicoSeleccionado.apellidos || '';
+      nombreCompleto = `${nombres} ${apellidos}`.trim() || 'Técnico Asignado';
+    }
 
-  const tecnicoSeleccionado = this.tecnicos.find(t => t.id === idTecnico);
-  
-  let nombreCompleto = 'Técnico Asignado';
-  if (tecnicoSeleccionado) {
-    const nombres = tecnicoSeleccionado.nombres || '';
-    const apellidos = tecnicoSeleccionado.apellidos || '';
-    nombreCompleto = `${nombres} ${apellidos}`.trim() || 'Técnico Asignado';
+    try {
+      const ticketRef = doc(this.firestore, "Tickets", idTicket);
+      await updateDoc(ticketRef, {
+        id_tecnico: idTecnico,
+        nombre_tecnico: nombreCompleto, 
+        estado: "asignado"
+      });
+      alert(`¡Listo! Ticket asignado a ${nombreCompleto}.`);
+    } catch (error) {
+      alert('Ocurrió un error al intentar actualizar la base de datos.');
+    }
   }
-
-  try {
-    const ticketRef = doc(this.firestore, "Tickets", idTicket);
-    
-    await updateDoc(ticketRef, {
-      id_tecnico: idTecnico,
-      nombre_tecnico: nombreCompleto, 
-      estado: "asignado"
-    });
-    
-    alert(`¡Listo! Ticket asignado a ${nombreCompleto} exitosamente.`);
-    
-  } catch (error) {
-    console.error("Hubo un error al asignar en Firestore:", error); 
-    alert('Ocurrió un error al intentar actualizar la base de datos.');
-  }
-}
 
   cerrarSesion() {
     this.router.navigate(['/']);
