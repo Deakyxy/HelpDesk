@@ -13,51 +13,50 @@ import { Firestore, collection, query, where, collectionData } from '@angular/fi
 })
 export class HomeComponent {
   bordeArcoirisActivo: boolean = true; 
+  cargando: boolean = false; 
   private firestore = inject(Firestore);
   usuario = new Usuario();
 
   constructor(public router: Router) {}
 
-  login() {
-  let UsuarioCollection = collection(this.firestore, "Login");
-  
-  let q = query(
-    UsuarioCollection, 
-    where("correo", "==", this.usuario.usuario), 
-    where("contrasena", "==", this.usuario.contrasena)
-  );
-  
-  collectionData(q).subscribe((datos: any) => {
-    if (datos.length > 0) {
-      this.usuario.idusuario = datos[0].idUsuario;
-      this.usuario.nombres = datos[0].nombres;
-      this.usuario.apellidos = datos[0].apellidos;
-      this.usuario.rol = datos[0].rol;
+ login() {
+    this.cargando = true; 
+    
+    let UsuarioCollection = collection(this.firestore, "Login");
+    let q = query(
+      UsuarioCollection, 
+      where("correo", "==", this.usuario.usuario), 
+      where("contrasena", "==", this.usuario.contrasena)
+    );
+    
+    collectionData(q).subscribe((datos: any) => {
+  if (datos.length > 0) {
+    this.usuario.idusuario = datos[0].idUsuario;
+    this.usuario.nombres = datos[0].nombres;
+    this.usuario.apellidos = datos[0].apellidos;
+    this.usuario.rol = datos[0].rol;
 
-    switch (this.usuario.rol) {
-        case 'admin':
-          this.router.navigate(['/admin'], { state: this.usuario });
-          break;
-          
-        case 'tecnico':
-          this.router.navigate(['/tecnico'], { state: this.usuario });
-          break;
-          
-        case 'usuario':
-          this.router.navigate(['/panel-usuario'], { state: this.usuario });
-          break;
-          
+    setTimeout(() => {
+      switch (this.usuario.rol) {
+        case 'admin': this.router.navigate(['/admin'], { state: this.usuario }); break;
+        case 'tecnico': this.router.navigate(['/tecnico'], { state: this.usuario }); break;
+        case 'usuario': this.router.navigate(['/panel-usuario'], { state: this.usuario }); break;
         default:
-          alert("Rol de usuario no reconocido.");
+          this.cargando = false;
+          alert("Rol no reconocido.");
           break;
       }
+    },1000);
 
-    } else {
-      alert("Usuario o contraseña incorrectos");
-    }
-  });
+  } else {
+    
+    this.cargando = false; 
+    alert("Usuario o contraseña incorrectos");
+  }
+});
+  }
 }
-}
+
 
 export class Usuario {
   idusuario: string = "";

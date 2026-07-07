@@ -36,24 +36,43 @@ export class DashboardAdminComponent {
   }
 
   async asignar(idTicket: string, idTecnico: string) {
-    if (!idTecnico) {
-      alert('Por favor, selecciona un técnico de la lista.');
-      return;
-    }
-
-    try {
-      const ticketRef = doc(this.firestore, "Tickets", idTicket);
-      await updateDoc(ticketRef, {
-        id_tecnico: idTecnico,
-        estado: "asignado"
-      });
-      
-      alert('¡Listo! Ticket asignado exitosamente.');
-      
-    } catch (error) {
-      console.error("Hubo un error al asignar:", error);
-    }
+  // 1. Validar que tengamos ambos identificadores
+  if (!idTicket) {
+    console.error("El ID del ticket es indefinido o inválido.");
+    alert("Error interno: No se pudo identificar el ticket.");
+    return;
   }
+
+  if (!idTecnico) {
+    alert('Por favor, selecciona un técnico de la lista.');
+    return;
+  }
+
+  const tecnicoSeleccionado = this.tecnicos.find(t => t.id === idTecnico);
+  
+  let nombreCompleto = 'Técnico Asignado';
+  if (tecnicoSeleccionado) {
+    const nombres = tecnicoSeleccionado.nombres || '';
+    const apellidos = tecnicoSeleccionado.apellidos || '';
+    nombreCompleto = `${nombres} ${apellidos}`.trim() || 'Técnico Asignado';
+  }
+
+  try {
+    const ticketRef = doc(this.firestore, "Tickets", idTicket);
+    
+    await updateDoc(ticketRef, {
+      id_tecnico: idTecnico,
+      nombre_tecnico: nombreCompleto, 
+      estado: "asignado"
+    });
+    
+    alert(`¡Listo! Ticket asignado a ${nombreCompleto} exitosamente.`);
+    
+  } catch (error) {
+    console.error("Hubo un error al asignar en Firestore:", error); 
+    alert('Ocurrió un error al intentar actualizar la base de datos.');
+  }
+}
 
   cerrarSesion() {
     this.router.navigate(['/']);

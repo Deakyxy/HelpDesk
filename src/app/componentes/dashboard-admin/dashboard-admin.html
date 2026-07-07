@@ -28,7 +28,7 @@
               <select #selectTecnico class="form-select">
                 <option value="">-- Seleccionar --</option>
                 <option *ngFor="let tecnico of tecnicos" [value]="tecnico.id">
-                  {{ tecnico.nombre }}
+                  {{ tecnico.nombres }} {{ tecnico.apellidos }}
                 </option>
               </select>
             </td>
