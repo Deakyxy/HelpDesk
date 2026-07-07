@@ -1,19 +1,90 @@
-<nav class="navbar bg-body-tertiary shadow border-0">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold">Bienvenido Tecnico {{ usuario.nombres }} {{ usuario.apellidos }}!!!</a>
-    <div><button class="btn btn-danger" (click)="cerrarSesion()">Cerrar Sesión</button></div>
+<nav class="navbar bg-light shadow-sm py-3 px-4 mb-5 border-0">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    <h5 class="m-0 fw-bold" style="color: #0f172a;">
+      Bienvenido Técnico, {{ usuario.nombres }} {{ usuario.apellidos }}
+    </h5>
+    <button class="btn btn-danger text-white fw-semibold px-4" (click)="cerrarSesion()">
+      Cerrar Sesión
+    </button>
   </div>
-  
 </nav>
 
-<div class="container mt-4 shadow border-0 p-4" style="border-radius: 20px; background-color: #f8f9fa;">
-  
-  <div class="d-flex flex-column flex-sm-row justify-content-between gap-3">
-    <button class="btn btn-info text-white custom-btn fw-semibold">
-      Ver mis solicitudes
-    </button>
-    <button class="btn btn-warning custom-btn fw-semibold">
-      Crear solicitud
-    </button>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-sm border-0" style="border-radius: 15px; background-color: #f8f9fa;">
+        <div class="card-body d-flex flex-column flex-sm-row justify-content-between align-items-center p-4 gap-3">
+          <button class="btn text-white fw-bold px-4 py-2" style="background-color: #00d4ff; border-radius: 8px;" (click)="mostrarTablas = !mostrarTablas">
+            Ver mis solicitudes
+          </button>
+          <button class="btn btn-primary fw-bold px-4 py-2" style="border-radius: 8px;">
+            Crear solicitud
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center mt-4" *ngIf="mostrarTablas">
+    <div class="col-lg-10">
+      
+      <h5 class="text-primary fw-bold mt-3">Mi Fila de Trabajo (Activos)</h5>
+      <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px; overflow: hidden;">
+        <div class="card-body p-0">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="bg-danger text-white text-center">
+              <tr>
+                <th class="py-3">Título</th>
+                <th class="py-3">Área</th>
+                <th class="py-3">Detalles</th>
+                <th class="py-3">Acción</th>
+              </tr>
+            </thead>
+            <tbody class="text-center">
+              <tr *ngFor="let tarea of tareasActivas">
+                <td class="text-start fw-semibold">{{ tarea.titulo }}</td>
+                <td>{{ tarea.area }}</td>
+                <td class="text-start text-muted">{{ tarea.comentario }}</td>
+                <td>
+                  <button *ngIf="tarea.estado === 'por_cerrar'" class="btn btn-success btn-sm fw-bold px-3 py-2" (click)="resolverTicket(tarea.id)">
+                    ✓ Cierre Definitivo
+                  </button>
+                  <span *ngIf="tarea.estado === 'asignado'" class="text-muted fw-semibold">Esperando al usuario</span>
+                </td>
+              </tr>
+              <tr *ngIf="tareasActivas.length === 0">
+                <td colspan="4" class="py-4 text-muted">No tienes tareas asignadas pendientes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h5 class="text-secondary fw-bold">Historial de Trabajo (Resueltos)</h5>
+      <div class="card shadow-sm border-0 mb-5" style="border-radius: 15px; overflow: hidden;">
+        <div class="card-body p-0">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light text-secondary text-center">
+              <tr>
+                <th class="py-3">Título</th>
+                <th class="py-3">Área</th>
+                <th class="py-3">Estado</th>
+              </tr>
+            </thead>
+            <tbody class="text-center">
+              <tr *ngFor="let tarea of tareasHistorial">
+                <td class="text-start fw-semibold">{{ tarea.titulo }}</td>
+                <td>{{ tarea.area }}</td>
+                <td><span class="badge bg-secondary">RESUELTO</span></td>
+              </tr>
+              <tr *ngIf="tareasHistorial.length === 0">
+                <td colspan="3" class="py-4 text-muted">Aún no has resuelto ningún ticket.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
