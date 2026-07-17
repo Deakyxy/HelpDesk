@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Firestore, collection, query, where, collectionData, doc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -12,7 +13,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./dashboard-admin.css']
 })
 export class DashboardAdminComponent {
-  
   private firestore = inject(Firestore);
   private router = inject(Router);
 
@@ -38,7 +38,11 @@ export class DashboardAdminComponent {
 
   async asignar(idTicket: string, idTecnico: string) {
     if (!idTicket || !idTecnico) {
-      alert('Por favor, selecciona un técnico de la lista.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Falta seleccionar técnico',
+        text: 'Por favor, selecciona un técnico de la lista antes de asignar.'
+      });
       return;
     }
 
@@ -51,6 +55,13 @@ export class DashboardAdminComponent {
       nombreCompleto = `${nombres} ${apellidos}`.trim() || 'Técnico Asignado';
     }
 
+    Swal.fire({
+      title: 'Asignando ticket...',
+      text: `Vinculando solicitud con ${nombreCompleto}.`,
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
     try {
       const ticketRef = doc(this.firestore, "Tickets", idTicket);
       await updateDoc(ticketRef, {
@@ -58,9 +69,20 @@ export class DashboardAdminComponent {
         nombre_tecnico: nombreCompleto, 
         estado: "asignado"
       });
-      alert(`¡Listo! Ticket asignado a ${nombreCompleto}.`);
+      
+      Swal.fire({
+        icon: 'success',
+        title: '¡Asignación exitosa!',
+        text: `Ticket asignado correctamente a ${nombreCompleto}.`,
+        timer: 2000,
+        showConfirmButton: false
+      });
     } catch (error) {
-      alert('Ocurrió un error al intentar actualizar la base de datos.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de base de datos',
+        text: 'Ocurrió un error al intentar actualizar la asignación.'
+      });
     }
   }
 

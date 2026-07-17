@@ -30,6 +30,7 @@
           <table class="table table-hover align-middle mb-0">
             <thead class="bg-primary text-white text-center">
               <tr>
+                <th class="py-3">Folio</th>
                 <th class="py-3">Título</th>
                 <th class="py-3">Área</th>
                 <th class="py-3">Estado</th>
@@ -38,6 +39,7 @@
             </thead>
             <tbody class="text-center">
               <tr *ngFor="let ticket of misTicketsActivos">
+                <td class="fw-bold text-primary">#{{ ticket.correlativo || 'N/A' }}</td>
                 <td class="text-start fw-semibold">{{ ticket.titulo }}</td>
                 <td>{{ ticket.area }}</td>
                 <td>
@@ -46,19 +48,19 @@
                     'bg-primary': ticket.estado === 'asignado',
                     'bg-info text-dark': ticket.estado === 'por_cerrar'
                   }">
-                    {{ ticket.estado === 'por_cerrar' ? 'EN REVISIÓN' : (ticket.estado | uppercase) }}
+                    {{ ticket.estado === 'por_cerrar' ? 'REVISADO POR TÉCNICO' : (ticket.estado | uppercase) }}
                   </span>
                 </td>
                 <td>
-                  <button *ngIf="ticket.estado === 'asignado'" class="btn btn-success btn-sm fw-bold" (click)="solicitarCierre(ticket.id)">
-                    Solucionado
+                  <button *ngIf="ticket.estado === 'por_cerrar'" class="btn btn-success btn-sm fw-bold" (click)="solicitarCierre(ticket.id)">
+                    Confirmar Cierre
                   </button>
-                  <span *ngIf="ticket.estado === 'por_cerrar'" class="text-muted fw-semibold">Esperando al técnico</span>
-                  <span *ngIf="ticket.estado === 'pendiente'" class="text-muted fw-bold">-</span>
+                  <span *ngIf="ticket.estado === 'asignado'" class="text-muted fw-semibold">En proceso de soporte</span>
+                  <span *ngIf="ticket.estado === 'pendiente'" class="text-muted fw-semibold">Pendiente de asignación</span>
                 </td>
               </tr>
               <tr *ngIf="misTicketsActivos.length === 0">
-                <td colspan="4" class="py-4 text-muted">No tienes solicitudes activas.</td>
+                <td colspan="5" class="py-4 text-muted">No tienes solicitudes activas.</td>
               </tr>
             </tbody>
           </table>
@@ -71,6 +73,7 @@
           <table class="table table-hover align-middle mb-0">
             <thead class="bg-light text-center text-secondary">
               <tr>
+                <th class="py-3">Folio</th>
                 <th class="py-3">Título</th>
                 <th class="py-3">Área</th>
                 <th class="py-3">Estado</th>
@@ -78,12 +81,13 @@
             </thead>
             <tbody class="text-center">
               <tr *ngFor="let ticket of misTicketsHistorial">
+                <td class="fw-bold text-secondary">#{{ ticket.correlativo || 'N/A' }}</td>
                 <td class="text-start fw-semibold">{{ ticket.titulo }}</td>
                 <td>{{ ticket.area }}</td>
                 <td><span class="badge bg-secondary">RESUELTO</span></td>
               </tr>
               <tr *ngIf="misTicketsHistorial.length === 0">
-                <td colspan="3" class="py-4 text-muted">No tienes solicitudes resueltas aún.</td>
+                <td colspan="4" class="py-4 text-muted">No tienes solicitudes resueltas aún.</td>
               </tr>
             </tbody>
           </table>

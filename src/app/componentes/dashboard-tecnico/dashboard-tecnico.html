@@ -17,7 +17,7 @@
           <button class="btn text-white fw-bold px-4 py-2" style="background-color: #00d4ff; border-radius: 8px;" (click)="mostrarTablas = !mostrarTablas">
             Ver mis solicitudes
           </button>
-          <button class="btn btn-primary fw-bold px-4 py-2" style="border-radius: 8px;">
+          <button type="button" class="btn btn-primary fw-bold px-4 py-2" style="border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#modalNuevoTicketTecnico">
             Crear solicitud
           </button>
         </div>
@@ -34,6 +34,7 @@
           <table class="table table-hover align-middle mb-0">
             <thead class="bg-danger text-white text-center">
               <tr>
+                <th class="py-3">Folio</th>
                 <th class="py-3">Título</th>
                 <th class="py-3">Área</th>
                 <th class="py-3">Detalles</th>
@@ -42,18 +43,19 @@
             </thead>
             <tbody class="text-center">
               <tr *ngFor="let tarea of tareasActivas">
+                <td class="fw-bold text-danger">#{{ tarea.correlativo || 'N/A' }}</td>
                 <td class="text-start fw-semibold">{{ tarea.titulo }}</td>
                 <td>{{ tarea.area }}</td>
                 <td class="text-start text-muted">{{ tarea.comentario }}</td>
                 <td>
-                  <button *ngIf="tarea.estado === 'por_cerrar'" class="btn btn-success btn-sm fw-bold px-3 py-2" (click)="resolverTicket(tarea.id)">
-                    ✓ Cierre Definitivo
+                  <button *ngIf="tarea.estado === 'asignado'" class="btn btn-warning btn-sm fw-bold px-3 py-2" (click)="resolverTicket(tarea.id)">
+                    ✓ Terminado
                   </button>
-                  <span *ngIf="tarea.estado === 'asignado'" class="text-muted fw-semibold">Esperando al usuario</span>
+                  <span *ngIf="tarea.estado === 'por_cerrar'" class="text-muted fw-semibold">Esperando firma del usuario</span>
                 </td>
               </tr>
               <tr *ngIf="tareasActivas.length === 0">
-                <td colspan="4" class="py-4 text-muted">No tienes tareas asignadas pendientes.</td>
+                <td colspan="5" class="py-4 text-muted">No tienes tareas asignadas pendientes.</td>
               </tr>
             </tbody>
           </table>
@@ -66,6 +68,7 @@
           <table class="table table-hover align-middle mb-0">
             <thead class="bg-light text-secondary text-center">
               <tr>
+                <th class="py-3">Folio</th>
                 <th class="py-3">Título</th>
                 <th class="py-3">Área</th>
                 <th class="py-3">Estado</th>
@@ -73,18 +76,50 @@
             </thead>
             <tbody class="text-center">
               <tr *ngFor="let tarea of tareasHistorial">
+                <td class="fw-bold text-secondary">#{{ tarea.correlativo || 'N/A' }}</td>
                 <td class="text-start fw-semibold">{{ tarea.titulo }}</td>
                 <td>{{ tarea.area }}</td>
                 <td><span class="badge bg-secondary">RESUELTO</span></td>
               </tr>
               <tr *ngIf="tareasHistorial.length === 0">
-                <td colspan="3" class="py-4 text-muted">Aún no has resuelto ningún ticket.</td>
+                <td colspan="4" class="py-4 text-muted">Aún no has resuelto ningún ticket.</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalNuevoTicketTecnico" tabindex="-1" aria-labelledby="tituloModalTecnico" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border: 2px solid #0d6efd; border-radius: 15px; overflow: hidden;">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold" id="tituloModalTecnico">Detalles del Nuevo Reporte</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-primary">Título del Problema</label>
+          <input type="text" class="form-control" [(ngModel)]="nuevoTicket.titulo" placeholder="Ej. Falla crítica en servidor">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-primary">Área Afectada</label>
+          <input type="text" class="form-control" [(ngModel)]="nuevoTicket.area" placeholder="Ej. Soporte, Infraestructura...">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-primary">Comentario / Detalles Técnicos</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="nuevoTicket.comentario" placeholder="Describe los pormenores del problema detectado..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary fw-bold" (click)="crearTicket()">
+          Enviar a Soporte
+        </button>
+      </div>
     </div>
   </div>
 </div>

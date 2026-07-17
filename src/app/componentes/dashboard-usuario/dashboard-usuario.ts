@@ -2,8 +2,11 @@ import { Component, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../home/home';
-import { Firestore, collection, where, query, collectionData, addDoc, doc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, collection, where, query, collectionData, addDoc, doc, updateDoc, getDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-dashboard-usuario',
@@ -55,14 +58,37 @@ export class DashboardUsuarioComponent {
 
   async crearTicket() {
     if (!this.nuevoTicket.titulo || !this.nuevoTicket.area || !this.nuevoTicket.comentario) {
-      alert('Por favor, llena todos los campos del formulario.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor, llena todos los campos del formulario.'
+      });
       return;
     }
 
+    Swal.fire({
+      title: 'Generando ticket...',
+      text: 'Por favor, espera un momento mientras enviamos tu solicitud.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     try {
-      const ticketsCollection = collection(this.firestore, "Tickets");
+      const contadorRef = doc(this.firestore, "Variables", "Globales");
+      const contadorSnap = await getDoc(contadorRef);
       
+      let nuevoNumero = 1;
+
+      if (contadorSnap.exists()) {
+        const data = contadorSnap.data();
+        nuevoNumero = (data['idultimoticket'] || 0) + 1;
+      }
+
+      const ticketsCollection = collection(this.firestore, "Tickets");
       await addDoc(ticketsCollection, {
+        correlativo: nuevoNumero,
         titulo: this.nuevoTicket.titulo,
         area: this.nuevoTicket.area,
         comentario: this.nuevoTicket.comentario,
@@ -72,22 +98,65 @@ export class DashboardUsuarioComponent {
         nombre_creador: `${this.usuario.nombres} ${this.usuario.apellidos}`.trim()
       });
 
-      alert('¡Tu solicitud ha sido enviada al administrador!');
+      await updateDoc(contadorRef, {
+        idultimoticket: nuevoNumero
+      });
+
+      const modalElement = document.getElementById('modalNuevoTicket');
+      if (modalElement) {
+        const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+        modalInstance.hide();
+      }
+
+      Swal.fire({
+        title: `¡Se envió correctamente! Ticket #${nuevoNumero}`,
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false
+      });
+
       this.nuevoTicket = { titulo: '', area: '', comentario: '' }; 
 
     } catch (error) {
-      alert("Hubo un error al crear el ticket.");
+      console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al crear el ticket. Inténtalo de nuevo.'
+      });
     }
   }
 
   async solicitarCierre(idTicket: string) {
-    try {
-      const ticketRef = doc(this.firestore, "Tickets", idTicket);
-      await updateDoc(ticketRef, { estado: "por_cerrar" });
-      alert("¡Gracias! Has confirmado la solución. El técnico cerrará el ticket en el sistema.");
-    } catch (error) {
-      alert("Hubo un error al actualizar el ticket.");
-    }
+    Swal.fire({
+      title: '¿Confirmar cierre de ticket?',
+      text: '¿Estás de acuerdo con la solución brindada por el técnico para dar por cerrado este problema?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cerrar definitivamente',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const ticketRef = doc(this.firestore, "Tickets", idTicket);
+          await updateDoc(ticketRef, { estado: "resuelto" });
+          
+          Swal.fire({
+            icon: 'success',
+            title: '¡Ticket cerrado!',
+            text: 'Has confirmado la solución de manera exitosa.',
+            timer: 2500,
+            showConfirmButton: false
+          });
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un error al actualizar el ticket.'
+          });
+        }
+      }
+    });
   }
 
   cerrarSesion() {
