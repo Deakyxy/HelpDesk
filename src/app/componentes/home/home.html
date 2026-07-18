@@ -1,35 +1,57 @@
-<div class="card text-center mx-auto my-5 shadow border-0 "
-    [class.borde-animado]="bordeArcoirisActivo" 
-    style="max-width: 400px; border-radius: 20px;">
-  
-  <div class="card-body py-5 px-4">
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="row w-100 align-items-center justify-content-center">
     
-    <div class="text-center mb-5">
-      <img src="https://github.com/Deakyxy/HelpDesk/blob/main/Logo.png?raw=true" 
-           alt="Logo HelpDesk" 
-           class="img-fluid" 
-           style="max-width: 160px; border-radius: 20px;">
+    <div class="col-lg-6 col-md-5 d-none d-md-block text-center text-md-start p-4">
+      
+      <div class="d-flex flex-column gap-3 align-items-center">
+        <img src="https://github.com/Deakyxy/HelpDesk/blob/main/src/app/componentes/WhatsApp%20Image%202026-07-16%20at%206.35.44%20PM.jpeg?raw=true" 
+             alt="Ilustración Principal" 
+             class="img-fluid rounded-4 shadow-sm" 
+             style="max-width: 80%;">
+      </div>
+            <p style="font-size: 2.3em; color: #000000;">Gestion de Mantenimiento de Hardware</p>
+
     </div>
 
-    <div id="login" class="p-2">
+    <div class="col-lg-5 col-md-7 col-12 d-flex justify-content-center">
       
-      <div class="mb-4 text-start">
-        <label class="form-label fw-semibold" for="usuario">Usuario:</label>
-        <input type="text" [(ngModel)]="usuario.usuario" id="usuario" name="usuario" class="form-control form-control-lg" placeholder="Tu usuario">
-      </div>
-      
-      <div class="mb-5 text-start">
-        <label class="form-label fw-semibold" for="contraseña">Contraseña:</label>
-        <input type="password" [(ngModel)]="usuario.contrasena" id="contraseña" name="contraseña" class="form-control form-control-lg" placeholder="Tu contraseña">
-      </div>
-      
+      <div class="card text-center shadow border-0 w-100"
+           [class.borde-animado]="bordeArcoirisActivo" 
+           style="max-width: 400px; border-radius: 20px;">
+        
+        <div class="tarjeta card-body py-5 px-4">
+          
+          <div class="text-center mb-5">
+            <img src="https://github.com/Deakyxy/HelpDesk/blob/main/Logo.png?raw=true" 
+                 alt="Logo HelpDesk" 
+                 class="img-fluid" 
+                 style="max-width: 160px; border-radius: 20px;">
+          </div>
+
+          <div id="login" class="p-2">
+            
+            <div class="mb-4 text-start">
+              <label class="form-label fw-semibold" for="usuario">Usuario:</label>
+              <input type="text" [(ngModel)]="usuario.usuario" id="usuario" name="usuario" class="form-control form-control-lg" placeholder="Tu usuario">
+            </div>
+            
+            <div class="mb-5 text-start">
+              <label class="form-label fw-semibold" for="contraseña">Contraseña:</label>
+              <input type="password" [(ngModel)]="usuario.contrasena" id="contraseña" name="contraseña" class="form-control form-control-lg" placeholder="Tu contraseña">
+            </div>
+            
             <button *ngIf="!cargando" (click)="login()" class="btn btn-primary w-100">
-            Ingresar
+              Ingresar
             </button>
 
             <div *ngIf="cargando" class="loader-container">
-            <div class="loader"></div>
+              <div class="loader"></div>
             </div>      
+          </div>
+        </div>
+      </div>
+
     </div>
+
   </div>
 </div>

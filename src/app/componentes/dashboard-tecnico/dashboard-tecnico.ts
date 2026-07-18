@@ -1,9 +1,12 @@
 import { Component, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Firestore, collection, where, query, collectionData, addDoc, doc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, collectionData, doc, updateDoc, addDoc, getDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { Usuario } from '../home/home';
+import Swal from 'sweetalert2';
+
+declare var bootstrap: any; 
 
 @Component({
   selector: 'app-dashboard-tecnico',
@@ -19,17 +22,17 @@ export class DashboardTecnicoComponent {
   
   usuario = new Usuario();
   mostrarTablas: boolean = false;
-
-    nuevoTicket = {
-    titulo: '',
-    area: '',
-    comentario: ''
-  };
   
   tareasActivas: any[] = [];
   tareasHistorial: any[] = [];
   misSolicitudesActivas: any[] = [];
   misSolicitudesHistorial: any[] = [];
+
+  nuevoTicket = {
+    titulo: '',
+    area: '',
+    comentario: ''
+  };
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
@@ -60,41 +63,114 @@ export class DashboardTecnicoComponent {
     }
   }
 
-    async crearTicket() {
-      if (!this.nuevoTicket.titulo || !this.nuevoTicket.area || !this.nuevoTicket.comentario) {
-        alert('Por favor, llena todos los campos del formulario.');
-        return;
-      }
-  
-      try {
-        const ticketsCollection = collection(this.firestore, "Tickets");
-        
-        await addDoc(ticketsCollection, {
-          titulo: this.nuevoTicket.titulo,
-          area: this.nuevoTicket.area,
-          comentario: this.nuevoTicket.comentario,
-          estado: "pendiente",
-          id_tecnico: "",
-          id_creador: this.usuario.idusuario,
-          nombre_creador: `${this.usuario.nombres} ${this.usuario.apellidos}`.trim()
-        });
-  
-        alert('¡Tu solicitud ha sido enviada al administrador!');
-        this.nuevoTicket = { titulo: '', area: '', comentario: '' }; 
-  
-      } catch (error) {
-        alert("Hubo un error al crear el ticket.");
-      }
+  async crearTicket() {
+    if (!this.nuevoTicket.titulo || !this.nuevoTicket.area || !this.nuevoTicket.comentario) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor, llena todos los campos del formulario.'
+      });
+      return;
     }
 
-  async resolverTicket(idTicket: string) {
+    Swal.fire({
+      title: 'Generando ticket...',
+      text: 'Por favor, espera un momento mientras enviamos tu solicitud.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     try {
-      const ticketRef = doc(this.firestore, "Tickets", idTicket);
-      await updateDoc(ticketRef, { estado: "resuelto" });
-      alert("¡Excelente! Has cerrado este ticket definitivamente.");
+      const contadorRef = doc(this.firestore, "Variables", "Globales");
+      const contadorSnap = await getDoc(contadorRef);
+      
+      let nuevoNumero = 1;
+
+      if (contadorSnap.exists()) {
+        const data = contadorSnap.data();
+        nuevoNumero = (data['idultimoticket'] || 0) + 1;
+      }
+
+      const ticketsCollection = collection(this.firestore, "Tickets");
+      await addDoc(ticketsCollection, {
+        correlativo: nuevoNumero,
+        titulo: this.nuevoTicket.titulo,
+        area: this.nuevoTicket.area,
+        comentario: this.nuevoTicket.comentario,
+        estado: "pendiente",
+        id_tecnico: "",
+        id_creador: this.usuario.idusuario,
+        nombre_creador: `${this.usuario.nombres} ${this.usuario.apellidos}`.trim()
+      });
+
+      await updateDoc(contadorRef, {
+        idultimoticket: nuevoNumero
+      });
+
+      const modalElement = document.getElementById('modalNuevoTicketTecnico');
+      if (modalElement) {
+        const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+        modalInstance.hide();
+      }
+
+      Swal.fire({
+        title: `¡Se envió correctamente! Ticket #${nuevoNumero}`,
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      this.nuevoTicket = { titulo: '', area: '', comentario: '' }; 
+
     } catch (error) {
-      alert("Ocurrió un error al intentar resolver el ticket.");
+      console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al crear el ticket. Inténtalo de nuevo.'
+      });
     }
+  }
+
+  async resolverTicket(idTicket: string) {
+    Swal.fire({
+      title: '¿Marcar como completado?',
+      text: '¿Estás seguro de marcar este ticket como resuelto? Se enviará al usuario para su validación.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, enviar a revisión',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        
+        Swal.fire({
+          title: 'Actualizando estado...',
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading()
+        });
+
+        try {
+          const ticketRef = doc(this.firestore, "Tickets", idTicket);
+          await updateDoc(ticketRef, { estado: "por_cerrar" });
+          
+          Swal.fire({
+            icon: 'success',
+            title: '¡Enviado!',
+            text: 'Se ha notificado al usuario para que confirme el cierre.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al intentar actualizar el ticket.'
+          });
+        }
+      }
+    });
   }
 
   cerrarSesion() {
