@@ -23,6 +23,9 @@ export class DashboardTecnicoComponent {
   usuario = new Usuario();
   mostrarTablas: boolean = false;
   
+  areaFiltro: string = 'Todas';
+  todasLasTareasActivas: any[] = [];
+  
   tareasActivas: any[] = [];
   tareasHistorial: any[] = [];
   misSolicitudesActivas: any[] = [];
@@ -51,7 +54,8 @@ export class DashboardTecnicoComponent {
       
       let qAsignados = query(ticketsRef, where("id_tecnico", "==", this.usuario.idusuario));
       collectionData(qAsignados, { idField: 'id' }).subscribe((datos: any[]) => {
-        this.tareasActivas = datos.filter(t => t.estado === 'asignado' || t.estado === 'por_cerrar');
+        this.todasLasTareasActivas = datos.filter(t => t.estado === 'asignado' || t.estado === 'por_cerrar');
+        this.filtrarPorArea();
         this.tareasHistorial = datos.filter(t => t.estado === 'resuelto');
       });
 
@@ -60,6 +64,14 @@ export class DashboardTecnicoComponent {
         this.misSolicitudesActivas = datos.filter(t => t.estado !== 'resuelto');
         this.misSolicitudesHistorial = datos.filter(t => t.estado === 'resuelto');
       });
+    }
+  }
+
+  filtrarPorArea() {
+    if (this.areaFiltro === 'Todas') {
+      this.tareasActivas = [...this.todasLasTareasActivas];
+    } else {
+      this.tareasActivas = this.todasLasTareasActivas.filter(t => t.area === this.areaFiltro);
     }
   }
 
@@ -144,7 +156,6 @@ export class DashboardTecnicoComponent {
       cancelButtonText: 'Cancelar'
     }).then(async (result) => {
       if (result.isConfirmed) {
-        
         Swal.fire({
           title: 'Actualizando estado...',
           allowOutsideClick: false,

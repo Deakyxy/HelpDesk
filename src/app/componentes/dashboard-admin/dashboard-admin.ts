@@ -16,24 +16,63 @@ export class DashboardAdminComponent {
   private firestore = inject(Firestore);
   private router = inject(Router);
 
+
+  vistaActual: 'panel' | 'usuarios' | 'staff' = 'panel';
+  mostrarTickets: boolean = false;
+  areaFiltro: string = 'Todas';
+
   tecnicos: any[] = [];
+  usuarios: any[] = [];
+  
+  todosTicketsActivos: any[] = [];
+  todosTicketsHistorial: any[] = [];
   ticketsActivos: any[] = [];
   ticketsHistorial: any[] = [];
 
   constructor() {
     let loginCollection = collection(this.firestore, "Login");
-    let qTecnicos = query(loginCollection, where("rol", "==", "tecnico"));
     
+
+    let qTecnicos = query(loginCollection, where("rol", "==", "tecnico"));
     collectionData(qTecnicos, { idField: 'id' }).subscribe((datos: any[]) => {
       this.tecnicos = datos;
     });
-    
-    let ticketsCollection = collection(this.firestore, "Tickets");
-    
-    collectionData(ticketsCollection, { idField: 'id' }).subscribe((datos: any[]) => {
-      this.ticketsActivos = datos.filter(t => t.estado === 'pendiente' || t.estado === 'asignado' || t.estado === 'por_cerrar');
-      this.ticketsHistorial = datos.filter(t => t.estado === 'resuelto');
+
+
+    let qUsuarios = query(loginCollection, where("rol", "==", "usuario"));
+    collectionData(qUsuarios, { idField: 'id' }).subscribe((datos: any[]) => {
+      this.usuarios = datos;
     });
+    
+
+    let ticketsCollection = collection(this.firestore, "Tickets");
+    collectionData(ticketsCollection, { idField: 'id' }).subscribe((datos: any[]) => {
+      this.todosTicketsActivos = datos.filter(t => t.estado === 'pendiente' || t.estado === 'asignado' || t.estado === 'por_cerrar');
+      this.todosTicketsHistorial = datos.filter(t => t.estado === 'resuelto');
+      
+
+      this.filtrarPorArea(); 
+    });
+  }
+
+
+  cambiarVista(vista: 'panel' | 'usuarios' | 'staff') {
+    this.vistaActual = vista;
+    this.mostrarTickets = false; 
+  }
+
+  toggleTickets() {
+    this.mostrarTickets = !this.mostrarTickets;
+  }
+
+  filtrarPorArea() {
+    if (this.areaFiltro === 'Todas') {
+      this.ticketsActivos = [...this.todosTicketsActivos];
+      this.ticketsHistorial = [...this.todosTicketsHistorial];
+    } else {
+      this.ticketsActivos = this.todosTicketsActivos.filter(t => t.area === this.areaFiltro);
+      this.ticketsHistorial = this.todosTicketsHistorial.filter(t => t.area === this.areaFiltro);
+    }
   }
 
   async asignar(idTicket: string, idTecnico: string) {

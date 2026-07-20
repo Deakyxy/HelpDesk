@@ -29,6 +29,11 @@ export class DashboardUsuarioComponent {
   };
 
   mostrarTabla: boolean = false;
+  areaFiltro: string = 'Todas';
+
+  todosMisTicketsActivos: any[] = [];
+  todosMisTicketsHistorial: any[] = [];
+
   misTicketsActivos: any[] = [];
   misTicketsHistorial: any[] = [];
   
@@ -50,9 +55,24 @@ export class DashboardUsuarioComponent {
       let qMisTickets = query(ticketsRef, where("id_creador", "==", this.usuario.idusuario));
       
       collectionData(qMisTickets, { idField: 'id' }).subscribe((datos: any[]) => {
-        this.misTicketsActivos = datos.filter(t => t.estado !== 'resuelto');
-        this.misTicketsHistorial = datos.filter(t => t.estado === 'resuelto');
+        this.todosMisTicketsActivos = datos.filter(t => t.estado !== 'resuelto');
+        this.todosMisTicketsHistorial = datos.filter(t => t.estado === 'resuelto');
+        this.filtrarPorArea();
       });
+    }
+  }
+
+  toggleTickets() {
+    this.mostrarTabla = !this.mostrarTabla;
+  }
+
+  filtrarPorArea() {
+    if (this.areaFiltro === 'Todas') {
+      this.misTicketsActivos = [...this.todosMisTicketsActivos];
+      this.misTicketsHistorial = [...this.todosMisTicketsHistorial];
+    } else {
+      this.misTicketsActivos = this.todosMisTicketsActivos.filter(t => t.area === this.areaFiltro);
+      this.misTicketsHistorial = this.todosMisTicketsHistorial.filter(t => t.area === this.areaFiltro);
     }
   }
 
