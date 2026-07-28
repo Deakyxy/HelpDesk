@@ -1,7 +1,7 @@
 import { Component, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Firestore, collection, query, where, collectionData, doc, updateDoc, addDoc, getDoc } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, collectionData, doc, updateDoc, addDoc, getDoc, serverTimestamp } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { Usuario } from '../home/home';
 import Swal from 'sweetalert2';
@@ -27,7 +27,7 @@ export class DashboardTecnicoComponent {
   todasLasTareasActivas: any[] = [];
   tareasActivas: any[] = [];
   tareasHistorial: any[] = [];
-  usuarios: any[] = [];
+  usuarios: any[] = []; // Arreglo que guardará la lista de usuarios del sistema
 
   nuevoTicket = {
     titulo: '',
@@ -41,6 +41,8 @@ export class DashboardTecnicoComponent {
       this.usuario.idusuario = history.state.idusuario;
       
       let loginCollection = collection(this.firestore, "Login"); 
+      
+      // 1. Obtener datos del Técnico conectado
       let qLogin = query(loginCollection, where("idUsuario", "==", this.usuario.idusuario));
       collectionData(qLogin).subscribe((datos: any[]) => {
         if (datos && datos.length > 0) {
@@ -49,17 +51,26 @@ export class DashboardTecnicoComponent {
         }
       }); 
 
+      // 2. SOLUCIÓN AL SELECT VACÍO: Traer todos los usuarios registrados
       let qUsuarios = query(loginCollection, where("rol", "==", "usuario"));
       collectionData(qUsuarios, { idField: 'id' }).subscribe((datos: any[]) => {
         this.usuarios = datos;
       });
 
+      // 3. Traer los tickets asignados a este Técnico
       let ticketsRef = collection(this.firestore, "Tickets");
       let qAsignados = query(ticketsRef, where("id_tecnico", "==", this.usuario.idusuario));
+
       collectionData(qAsignados, { idField: 'id' }).subscribe((datos: any[]) => {
-        this.todasLasTareasActivas = datos.filter(t => t.estado === 'asignado' || t.estado === 'por_cerrar');
+        const datosOrdenados = datos.sort((a, b) => {
+          const fechaA = a.fecha_creacion?.seconds || 0;
+          const fechaB = b.fecha_creacion?.seconds || 0;
+          return fechaB - fechaA;
+        });
+
+        this.todasLasTareasActivas = datosOrdenados.filter(t => t.estado === 'asignado' || t.estado === 'por_cerrar');
         this.filtrarPorArea();
-        this.tareasHistorial = datos.filter(t => t.estado === 'resuelto');
+        this.tareasHistorial = datosOrdenados.filter(t => t.estado === 'resuelto');
       });
     }
   }
@@ -106,6 +117,7 @@ export class DashboardTecnicoComponent {
       const nombreUsuario = userSeleccionado ? `${userSeleccionado.nombres} ${userSeleccionado.apellidos}`.trim() : 'Usuario Desconocido';
 
       const ticketsCollection = collection(this.firestore, "Tickets");
+      
       await addDoc(ticketsCollection, {
         correlativo: nuevoNumero,
         titulo: this.nuevoTicket.titulo,
@@ -115,7 +127,8 @@ export class DashboardTecnicoComponent {
         id_tecnico: "",
         id_creador: this.nuevoTicket.idUsuarioAfectado,
         nombre_creador: nombreUsuario,
-        creado_por: this.usuario.idusuario
+        creado_por: this.usuario.idusuario,
+        fecha_creacion: serverTimestamp() // Generación correcta en base de datos
       });
 
       await updateDoc(contadorRef, {
@@ -177,7 +190,7 @@ export class DashboardTecnicoComponent {
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Ocurrió un error al intentar actualizar el ticket.'
+            text: 'Ocurrió un error al intentar actualizar the ticket.'
           });
         }
       }

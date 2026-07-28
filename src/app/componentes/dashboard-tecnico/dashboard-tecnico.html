@@ -76,8 +76,9 @@
                 <tr *ngFor="let tarea of tareasActivas" style="border-bottom: 1px solid #f0f0f0;">
                   <td class="fw-bold" style="padding: 15px;">#{{ tarea.correlativo || 'N/A' }}</td>
                   <td class="fw-semibold" style="padding: 15px;">{{ tarea.titulo }}</td>
-                  <td style="padding: 15px; color: #555;">{{ tarea.fecha_creacion?.toDate() | date: 'dd/MM/yyyy' }}</td>
-                  <td style="padding: 15px;">{{ tarea.area }}</td>
+<td style="padding: 15px; color: #555;">
+  {{ (tarea.fecha_creacion && tarea.fecha_creacion.toDate ? (tarea.fecha_creacion.toDate() | date: 'dd/MM/yyyy') : 'Registrando...') }}
+</td>                  <td style="padding: 15px;">{{ tarea.area }}</td>
                   <td class="text-muted text-truncate" style="max-width: 200px; padding: 15px;">{{ tarea.comentario }}</td>
                   <td style="padding: 15px;">
                     <span [ngClass]="tarea.estado === 'asignado' ? 'bg-warning text-dark' : 'bg-secondary text-white'" style="padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
@@ -114,7 +115,7 @@
                 <tr *ngFor="let tarea of tareasHistorial" style="border-bottom: 1px solid #f0f0f0;">
                   <td class="fw-bold" style="padding: 15px;">#{{ tarea.correlativo || 'N/A' }}</td>
                   <td class="fw-semibold" style="padding: 15px;">{{ tarea.titulo }}</td>
-                  <td style="padding: 15px; color: #555;">{{ tarea.fecha_creacion?.toDate() | date: 'dd/MM/yyyy' }}</td>
+                  <td style="padding: 15px; color: #555;">{{ (tarea.fecha_creacion?.toDate() | date: 'dd/MM/yyyy') || 'cargando' }}</td>
                   <td style="padding: 15px;">{{ tarea.area }}</td>
                   <td style="padding: 15px;"><span class="badge bg-secondary">Resuelto</span></td>
                 </tr>
