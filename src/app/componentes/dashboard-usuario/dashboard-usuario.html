@@ -65,6 +65,7 @@
                   <th style="font-weight: 600; padding: 15px; border: none;">Detalles</th>
                   <th style="font-weight: 600; padding: 15px; border: none;">Estado</th>
                   <th style="font-weight: 600; padding: 15px; border: none;">Acción</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">Prioridad</th>
                 </tr>
               </thead>
               <tbody>
@@ -82,20 +83,28 @@
                       }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
                       {{ ticket.estado === 'por_cerrar' ? 'REVISADO POR TÉCNICO' : (ticket.estado | uppercase) }}
                     </span>
-                  </td>
+                  </td>           
                   <td style="padding: 15px;">
                     <button *ngIf="ticket.estado === 'por_cerrar'" class="btn btn-sm btn-outline-success fw-bold"
                       (click)="solicitarCierre(ticket.id)">
                       Confirmar Cierre
                     </button>
-                    <span *ngIf="ticket.estado === 'asignado'" class="text-muted" style="font-size: 0.85rem;">En proceso
-                      de soporte</span>
-                    <span *ngIf="ticket.estado === 'pendiente'" class="text-muted" style="font-size: 0.85rem;">Pendiente
-                      de asignación</span>
+                    <span *ngIf="ticket.estado === 'asignado'" class="text-muted" style="font-size: 0.85rem;">En proceso de soporte</span>
+                    <span *ngIf="ticket.estado === 'pendiente'" class="text-muted" style="font-size: 0.85rem;">Pendiente de asignación</span>
+                  </td>
+                  <td style="padding: 15px;">
+                    <span class="badge" [ngClass]="{
+                        'bg-danger text-white': ticket.prioridad === 'Alta', 
+                        'bg-warning text-dark': ticket.prioridad === 'Media',
+                        'bg-success text-white': ticket.prioridad === 'Baja',
+                        'bg-secondary text-white': !ticket.prioridad
+                      }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
+                      {{ ticket.prioridad ? (ticket.prioridad | uppercase) : 'N/A' }}
+                    </span>
                   </td>
                 </tr>
                 <tr *ngIf="misTicketsActivos.length === 0">
-                  <td colspan="6" class="text-center py-4 text-muted">No tienes solicitudes activas en esta área.</td>
+                  <td colspan="8" class="text-center py-4 text-muted">No tienes solicitudes activas en esta área.</td>
                 </tr>
               </tbody>
             </table>
@@ -157,6 +166,15 @@
         <div class="mb-3">
           <label class="form-label fw-semibold text-dark">Título del Problema</label>
           <input type="text" class="form-control" [(ngModel)]="nuevoTicket.titulo" placeholder="Ej. PC no da video">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-dark">Prioridad</label>
+          <select class="form-select" [(ngModel)]="nuevoTicket.prioridad">
+            <option value="" disabled selected>Selecciona la prioridad</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
         </div>
         <div class="mb-3">
           <label class="form-label fw-semibold text-dark">Área / Categoría del Problema</label>

@@ -25,7 +25,8 @@ export class DashboardUsuarioComponent {
   nuevoTicket = {
     titulo: '',
     area: '',
-    comentario: ''
+    comentario: '',
+    prioridad: ''
   };
 
   mostrarTabla: boolean = false;
@@ -77,7 +78,7 @@ export class DashboardUsuarioComponent {
   }
 
   async crearTicket() {
-    if (!this.nuevoTicket.titulo || !this.nuevoTicket.area || !this.nuevoTicket.comentario) {
+    if (!this.nuevoTicket.titulo || !this.nuevoTicket.area || !this.nuevoTicket.comentario || !this.nuevoTicket.prioridad) {
       Swal.fire({
         icon: 'warning',
         title: 'Campos incompletos',
@@ -112,6 +113,7 @@ export class DashboardUsuarioComponent {
         titulo: this.nuevoTicket.titulo,
         area: this.nuevoTicket.area,
         comentario: this.nuevoTicket.comentario,
+        prioridad: this.nuevoTicket.prioridad,
         estado: "pendiente",
         id_tecnico: "",
         id_creador: this.usuario.idusuario,
@@ -136,7 +138,7 @@ export class DashboardUsuarioComponent {
         showConfirmButton: false
       });
 
-      this.nuevoTicket = { titulo: '', area: '', comentario: '' }; 
+      this.nuevoTicket = { titulo: '', area: '', comentario: '', prioridad: '' }; 
 
     } catch (error) {
       console.error(error);

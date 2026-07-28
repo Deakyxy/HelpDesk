@@ -1,4 +1,3 @@
-/* Estilos para los elementos de la barra lateral */
 .btn-sidebar-menu {
   width: 100%;
   padding: 12px 16px !important;
@@ -13,19 +12,16 @@
   transition: all 0.2s ease-in-out;
 }
 
-/* Hover en la barra lateral */
 .btn-sidebar-menu:hover {
   background-color: #e2e8f0 !important;
   color: #0b1a30 !important;
 }
 
-/* Estado Activo / Seleccionado de la barra lateral */
 .btn-sidebar-menu.activo {
   background-color: #cbd5e1 !important;
   color: #0b1a30 !important;
 }
 
-/* Ajustes limpios para tablas */
 .table th {
   font-weight: 600;
   border: none;
