@@ -33,7 +33,8 @@ export class DashboardTecnicoComponent {
     titulo: '',
     area: '',
     comentario: '',
-    idUsuarioAfectado: ''
+    idUsuarioAfectado: '',
+    prioridad:''
   };
 
   constructor() {
@@ -123,6 +124,7 @@ export class DashboardTecnicoComponent {
         titulo: this.nuevoTicket.titulo,
         area: this.nuevoTicket.area,
         comentario: this.nuevoTicket.comentario,
+        prioridad: this.nuevoTicket.prioridad,
         estado: "pendiente",
         id_tecnico: "",
         id_creador: this.nuevoTicket.idUsuarioAfectado,
@@ -148,7 +150,7 @@ export class DashboardTecnicoComponent {
         showConfirmButton: false
       });
 
-      this.nuevoTicket = { titulo: '', area: '', comentario: '', idUsuarioAfectado: '' }; 
+      this.nuevoTicket = { titulo: '', area: '', comentario: '', idUsuarioAfectado: '', prioridad: ' ' }; 
 
     } catch (error) {
       Swal.fire({

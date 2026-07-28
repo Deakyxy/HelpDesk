@@ -67,6 +67,7 @@
             <th class="py-3">Estado</th>
             <th class="py-3">Asignación</th>
             <th class="py-3">Acciones</th>
+            <th class="py-3">Prioridad</th>
           </tr>
         </thead>
         <tbody>
@@ -109,6 +110,16 @@
               </button>
               <span *ngIf="ticket.estado !== 'pendiente'" class="text-muted fw-bold">-</span>
             </td>
+            <td style="padding: 15px;">
+              <span class="badge" [ngClass]="{
+                'bg-danger text-white': ticket.prioridad === 'Alta', 
+                'bg-warning text-dark': ticket.prioridad === 'Media',
+                'bg-success text-white': ticket.prioridad === 'Baja',
+                'bg-secondary text-white': !ticket.prioridad
+                }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
+                {{ ticket.prioridad ? (ticket.prioridad | uppercase) : 'N/A' }}
+                </span>
+              </td>           
           </tr>
           <tr *ngIf="ticketsActivos.length === 0">
             <td colspan="8" class="text-center py-4 text-muted">No hay tickets activos en esta área.</td>

@@ -70,15 +70,17 @@
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Detalles</th>
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Estado</th>
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Acción</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">Prioridad</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let tarea of tareasActivas" style="border-bottom: 1px solid #f0f0f0;">
                   <td class="fw-bold" style="padding: 15px;">#{{ tarea.correlativo || 'N/A' }}</td>
                   <td class="fw-semibold" style="padding: 15px;">{{ tarea.titulo }}</td>
-<td style="padding: 15px; color: #555;">
-  {{ (tarea.fecha_creacion && tarea.fecha_creacion.toDate ? (tarea.fecha_creacion.toDate() | date: 'dd/MM/yyyy') : 'Registrando...') }}
-</td>                  <td style="padding: 15px;">{{ tarea.area }}</td>
+                  <td style="padding: 15px; color: #555;">
+                    {{ (tarea.fecha_creacion && tarea.fecha_creacion.toDate ? (tarea.fecha_creacion.toDate() | date: 'dd/MM/yyyy') : 'Registrando...') }}
+                  </td>                  
+                  <td style="padding: 15px;">{{ tarea.area }}</td>
                   <td class="text-muted text-truncate" style="max-width: 200px; padding: 15px;">{{ tarea.comentario }}</td>
                   <td style="padding: 15px;">
                     <span [ngClass]="tarea.estado === 'asignado' ? 'bg-warning text-dark' : 'bg-secondary text-white'" style="padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
@@ -90,6 +92,16 @@
                       <i class="bi bi-check-circle"></i> Resolver
                     </button>
                     <span *ngIf="tarea.estado === 'por_cerrar'" class="text-muted" style="font-size: 0.85rem;">Esperando usuario</span>
+                  </td>
+                  <td style="padding: 15px;">
+                    <span class="badge" [ngClass]="{
+                        'bg-danger text-white': tarea.prioridad === 'Alta', 
+                        'bg-warning text-dark': tarea.prioridad === 'Media',
+                        'bg-success text-white': tarea.prioridad === 'Baja',
+                        'bg-secondary text-white': !tarea.prioridad
+                      }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
+                      {{ tarea.prioridad ? (tarea.prioridad | uppercase) : 'N/A' }}
+                    </span>
                   </td>
                 </tr>
                 <tr *ngIf="tareasActivas.length === 0">
@@ -163,6 +175,15 @@
             <option *ngFor="let user of usuarios" [value]="user.idUsuario || user.id">
               {{ user.nombres }} {{ user.apellidos }}
             </option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-dark">Prioridad</label>
+          <select class="form-select" [(ngModel)]="nuevoTicket.prioridad">
+            <option value="" disabled selected>Selecciona la prioridad</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
           </select>
         </div>
         <div class="mb-3">
