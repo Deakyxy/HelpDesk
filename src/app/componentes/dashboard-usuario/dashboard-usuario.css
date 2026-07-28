@@ -1,0 +1,8 @@
+.btn-navegacion {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-navegacion:hover {
+  background-color: #004494 !important; 
+  color: #ffffff !important;
+}

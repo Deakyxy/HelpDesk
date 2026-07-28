@@ -1,54 +1,55 @@
 <div style="display: flex; flex-direction: column; min-height: 100vh; background-color: #f4f6f9;">
-  
-  <nav style="background-color: #0b1a30; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center;">
-    <span style="color: white; font-size: 15px;">Bienvenido, <span style="color: #00a8ff;">{{ usuario.nombres }} {{ usuario.apellidos }}</span></span>
+
+  <nav
+    style="background-color: #0b1a30; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center;">
+    <span style="color: white; font-size: 15px;">Bienvenido, <span style="color: #00a8ff;">{{ usuario.nombres }} {{
+        usuario.apellidos }}</span></span>
     <button class="btn btn-danger text-white fw-semibold px-3 py-1 border-0 rounded-3" (click)="cerrarSesion()">
       Cerrar Sesión
     </button>
   </nav>
 
   <div style="background-color: #0056b3; padding: 12px 30px; display: flex; gap: 15px;">
-    <button class="btn border-0 rounded-pill px-4 py-1 fw-semibold" 
-            [ngClass]="mostrarTabla ? 'bg-dark text-white' : 'bg-transparent text-white'"
-            style="transition: background-color 0.3s;"
-            (click)="toggleTickets()">
+    <button class="btn btn-navegacion border-0 rounded-pill px-4 py-1 fw-semibold"
+      [ngClass]="mostrarTabla ? 'bg-dark text-white' : 'bg-transparent text-white'" (click)="toggleTickets()">
       Mis Tickets
     </button>
-    <button class="btn text-white border-0 bg-transparent rounded-pill px-4 py-1 fw-semibold"
-            style="transition: background-color 0.3s;">
+    <button class="btn btn-navegacion text-white border-0 bg-transparent rounded-pill px-4 py-1 fw-semibold">
       Respuestas Personalizadas
     </button>
   </div>
 
   <div style="flex: 1; padding: 40px 30px;">
-    
+
     <div *ngIf="mostrarTabla">
-      
+
       <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
         <div class="card-body p-4 p-md-5">
-          
+
           <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
             <div>
               <h2 class="card-title fw-bold" style="color: #0b1a30;">Mis Tickets</h2>
               <p class="text-muted mb-0">Aquí puedes ver los tickets que has reportado.</p>
             </div>
-            
-            <button class="btn btn-primary fw-bold px-4 py-2" style="border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#modalNuevoTicket">
+
+            <button class="btn btn-primary fw-bold px-4 py-2" style="border-radius: 8px;" data-bs-toggle="modal"
+              data-bs-target="#modalNuevoTicket">
               Crear solicitud
             </button>
           </div>
 
           <div class="mb-4">
-            <select class="form-select d-inline-block w-auto fw-bold" 
-                    [(ngModel)]="areaFiltro" 
-                    (change)="filtrarPorArea()"
-                    style="background-color: #e9f5ff; color: #0d6efd; border: none; border-radius: 6px; padding: 8px 35px 8px 15px; cursor: pointer; box-shadow: none;">
-              <option value="Todas" selected>Todas las Áreas</option>
-              <option value="Laboratorio de Sistemas">Laboratorio de Sistemas</option>
-              <option value="Laboratorio de Electrónica">Laboratorio de Electrónica</option>
-              <option value="Aulas Generales">Aulas Generales</option>
-              <option value="Oficinas Administrativas">Oficinas Administrativas</option>
-              <option value="Centro de Cómputo / Site">Centro de Cómputo / Site</option>
+            <select class="form-select d-inline-block w-auto fw-bold" [(ngModel)]="areaFiltro"
+              (change)="filtrarPorArea()"
+              style="background-color: #e9f5ff; color: #0d6efd; border: none; border-radius: 6px; padding: 8px 35px 8px 15px; cursor: pointer; box-shadow: none;">
+            <option value="Todas" selected>Todas las Áreas</option>
+            <option value="Soporte de Hardware">Soporte de Hardware (Laptops, PCs, Periféricos)</option>
+            <option value="Software y Aplicaciones">Software y Aplicaciones (Errores, Instalaciones)</option>
+            <option value="Redes y Conectividad">Redes y Conectividad (Wi-Fi, VPN, Internet)</option>
+            <option value="Accesos y Credenciales">Accesos y Credenciales (Cuentas, Contraseñas, Permisos)</option>
+            <option value="Infraestructura y Servidores">Infraestructura y Servidores (Site, BD, Cloud)</option>
+            <option value="Seguridad Informática">Seguridad Informática (Antivirus, Incidencias)</option>
+            <option value="Telefonía y Comunicación">Telefonía y Comunicación (IP, Equipos de junta)</option>
             </select>
           </div>
 
@@ -59,6 +60,7 @@
                 <tr>
                   <th style="font-weight: 600; padding: 15px; border: none;">Número</th>
                   <th style="font-weight: 600; padding: 15px; border: none;">Título</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">Fecha de Creación</th>
                   <th style="font-weight: 600; padding: 15px; border: none;">Área</th>
                   <th style="font-weight: 600; padding: 15px; border: none;">Detalles</th>
                   <th style="font-weight: 600; padding: 15px; border: none;">Estado</th>
@@ -69,6 +71,7 @@
                 <tr *ngFor="let ticket of misTicketsActivos" style="border-bottom: 1px solid #f0f0f0;">
                   <td class="fw-bold" style="padding: 15px; color: #333;">#{{ ticket.correlativo || 'N/A' }}</td>
                   <td style="padding: 15px; color: #333; font-weight: 500;">{{ ticket.titulo }}</td>
+                  <td>{{ ticket.fecha_creacion?.toDate() | date: 'dd/MM/yyyy' }}</td>
                   <td style="padding: 15px; color: #333;">{{ ticket.area }}</td>
                   <td class="text-muted" style="padding: 15px; max-width: 250px;">{{ ticket.comentario }}</td>
                   <td style="padding: 15px;">
@@ -81,11 +84,14 @@
                     </span>
                   </td>
                   <td style="padding: 15px;">
-                    <button *ngIf="ticket.estado === 'por_cerrar'" class="btn btn-sm btn-outline-success fw-bold" (click)="solicitarCierre(ticket.id)">
+                    <button *ngIf="ticket.estado === 'por_cerrar'" class="btn btn-sm btn-outline-success fw-bold"
+                      (click)="solicitarCierre(ticket.id)">
                       Confirmar Cierre
                     </button>
-                    <span *ngIf="ticket.estado === 'asignado'" class="text-muted" style="font-size: 0.85rem;">En proceso de soporte</span>
-                    <span *ngIf="ticket.estado === 'pendiente'" class="text-muted" style="font-size: 0.85rem;">Pendiente de asignación</span>
+                    <span *ngIf="ticket.estado === 'asignado'" class="text-muted" style="font-size: 0.85rem;">En proceso
+                      de soporte</span>
+                    <span *ngIf="ticket.estado === 'pendiente'" class="text-muted" style="font-size: 0.85rem;">Pendiente
+                      de asignación</span>
                   </td>
                 </tr>
                 <tr *ngIf="misTicketsActivos.length === 0">
@@ -102,6 +108,7 @@
                 <tr>
                   <th style="font-weight: 600; padding: 15px; border: none;">Número</th>
                   <th style="font-weight: 600; padding: 15px; border: none;">Título</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">Fecha de Creación</th>
                   <th style="font-weight: 600; padding: 15px; border: none;">Área</th>
                   <th style="font-weight: 600; padding: 15px; border: none;">Estado</th>
                 </tr>
@@ -110,19 +117,22 @@
                 <tr *ngFor="let ticket of misTicketsHistorial" style="border-bottom: 1px solid #f0f0f0;">
                   <td class="fw-bold" style="padding: 15px; color: #6c757d;">#{{ ticket.correlativo || 'N/A' }}</td>
                   <td style="padding: 15px; color: #333; font-weight: 500;">{{ ticket.titulo }}</td>
+                  <td style="padding: 15px; color: #333;">{{ ticket.fecha_creacion?.toDate() | date: 'dd/MM/yyyy' }}</td>
                   <td style="padding: 15px; color: #333;">{{ ticket.area }}</td>
                   <td style="padding: 15px;">
-                    <span class="badge bg-secondary" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">RESUELTO</span>
+                    <span class="badge bg-secondary"
+                      style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">RESUELTO</span>
                   </td>
                 </tr>
                 <tr *ngIf="misTicketsHistorial.length === 0">
-                  <td colspan="4" class="text-center py-4 text-muted">Aún no tienes solicitudes resueltas en esta área.</td>
+                  <td colspan="4" class="text-center py-4 text-muted">Aún no tienes solicitudes resueltas en esta área.
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-        </div> 
+        </div>
       </div>
 
     </div>
@@ -133,7 +143,7 @@
       <p>Haz clic en "Mis Tickets" en el menú superior para ver o crear tus solicitudes de soporte.</p>
     </div>
 
-  </div>  
+  </div>
 </div>
 
 <div class="modal fade" id="modalNuevoTicket" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
@@ -149,19 +159,22 @@
           <input type="text" class="form-control" [(ngModel)]="nuevoTicket.titulo" placeholder="Ej. PC no da video">
         </div>
         <div class="mb-3">
-          <label class="form-label fw-semibold text-dark">Área</label>
+          <label class="form-label fw-semibold text-dark">Área / Categoría del Problema</label>
           <select class="form-select" [(ngModel)]="nuevoTicket.area">
             <option value="" disabled selected>Selecciona el área...</option>
-            <option value="Laboratorio de Sistemas">Laboratorio de Sistemas</option>
-            <option value="Laboratorio de Electrónica">Laboratorio de Electrónica</option>
-            <option value="Aulas Generales">Aulas Generales</option>
-            <option value="Oficinas Administrativas">Oficinas Administrativas</option>
-            <option value="Centro de Cómputo / Site">Centro de Cómputo / Site</option>
+            <option value="Soporte de Hardware">Soporte de Hardware (Laptops, PCs, Periféricos)</option>
+            <option value="Software y Aplicaciones">Software y Aplicaciones (Errores, Instalaciones)</option>
+            <option value="Redes y Conectividad">Redes y Conectividad (Wi-Fi, VPN, Internet)</option>
+            <option value="Accesos y Credenciales">Accesos y Credenciales (Cuentas, Contraseñas, Permisos)</option>
+            <option value="Infraestructura y Servidores">Infraestructura y Servidores (Site, BD, Cloud)</option>
+            <option value="Seguridad Informática">Seguridad Informática (Antivirus, Incidencias)</option>
+            <option value="Telefonía y Comunicación">Telefonía y Comunicación (IP, Equipos de junta)</option>
           </select>
         </div>
         <div class="mb-3">
           <label class="form-label fw-semibold text-dark">Comentario / Detalles</label>
-          <textarea class="form-control" rows="3" [(ngModel)]="nuevoTicket.comentario" placeholder="Describe qué pasó..."></textarea>
+          <textarea class="form-control" rows="3" [(ngModel)]="nuevoTicket.comentario"
+            placeholder="Describe qué pasó..."></textarea>
         </div>
       </div>
       <div class="modal-footer bg-light">

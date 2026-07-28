@@ -2,7 +2,7 @@ import { Component, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../home/home';
-import { Firestore, collection, where, query, collectionData, addDoc, doc, updateDoc, getDoc } from '@angular/fire/firestore';
+import { Firestore, collection, where, query, collectionData, addDoc, doc, updateDoc, getDoc, serverTimestamp } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
@@ -115,7 +115,8 @@ export class DashboardUsuarioComponent {
         estado: "pendiente",
         id_tecnico: "",
         id_creador: this.usuario.idusuario,
-        nombre_creador: `${this.usuario.nombres} ${this.usuario.apellidos}`.trim()
+        nombre_creador: `${this.usuario.nombres} ${this.usuario.apellidos}`.trim(),
+        fecha_creacion: serverTimestamp()
       });
 
       await updateDoc(contadorRef, {

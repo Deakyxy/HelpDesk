@@ -1,119 +1,196 @@
 <div style="display: flex; flex-direction: column; min-height: 100vh; background-color: #f4f6f9;">
-  
 
-  <nav style="background-color: #0b1a30; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center;">
-    <span style="color: white; font-size: 15px;">Bienvenido, <span style="color: #00a8ff;">admin</span></span>
-    <button class="btn btn-danger text-white fw-semibold px-3 py-1 border-0 rounded-3" (click)="cerrarSesion()">
+  <nav
+    style="background-color: #0b1a30; padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">
+    <span style="color: white; font-size: 15px; font-weight: 500;">
+      Bienvenido, <span style="color: #38b6ff; font-weight: 600;">{{ adminData.nombres }} {{ adminData.apellidos
+        }}</span>
+    </span>
+    <button class="btn btn-outline-danger fw-semibold px-3 py-1 rounded-3" (click)="cerrarSesion()">
       Cerrar Sesión
     </button>
   </nav>
 
+  <div style="display: flex; flex: 1;">
 
-  <div style="display: flex; justify-content: flex-start; background-color: white; padding: 0 30px; border-bottom: 1px solid #dee2e6; gap: 10px;">
-    <button class="btn border-0 d-flex flex-column align-items-center" 
-            [ngStyle]="{'background-color': vistaActual === 'panel' ? '#0b1a30' : 'transparent', 'color': vistaActual === 'panel' ? 'white' : '#212529'}"
-            style="padding: 15px 50px; font-weight: 600; border-radius: 8px 8px 0 0; margin-top: 10px;"
-            (click)="cambiarVista('panel')">
-      <i class="bi bi-speedometer2" style="font-size: 1.8rem; margin-bottom: 5px;"></i>
-      <span>Panel</span>
-    </button>
-    
-    <button class="btn border-0 d-flex flex-column align-items-center" 
-            [ngStyle]="{'background-color': vistaActual === 'usuarios' ? '#0b1a30' : 'transparent', 'color': vistaActual === 'usuarios' ? 'white' : '#212529'}"
-            style="padding: 15px 50px; font-weight: 600; border-radius: 8px 8px 0 0; margin-top: 10px;"
-            (click)="cambiarVista('usuarios')">
-      <i class="bi bi-person-fill" style="font-size: 1.8rem; margin-bottom: 5px;"></i>
-      <span>Usuarios</span>
-    </button>
-    
-    <button class="btn border-0 d-flex flex-column align-items-center" 
-            [ngStyle]="{'background-color': vistaActual === 'staff' ? '#0b1a30' : 'transparent', 'color': vistaActual === 'staff' ? 'white' : '#212529'}"
-            style="padding: 15px 50px; font-weight: 600; border-radius: 8px 8px 0 0; margin-top: 10px;"
-            (click)="cambiarVista('staff')">
-      <i class="bi bi-people-fill" style="font-size: 1.8rem; margin-bottom: 5px;"></i>
-      <span>Staff</span>
-    </button>
-  </div>
+    <aside
+      style="width: 260px; background-color: #eef2f7; border-right: 1px solid #dee2e6; padding: 20px 15px; display: flex; flex-direction: column; gap: 8px;">
+      <button class="btn btn-sidebar-menu text-start" [class.activo]="mostrarTickets" (click)="toggleTickets()">
+        <i class="bi bi-envelope me-3 fs-5"></i>
+        <span>Todos los Tickets</span>
+      </button>
 
+      <button class="btn btn-sidebar-menu text-start" [class.activo]="vistaActual === 'usuarios' && !mostrarTickets"
+        (click)="cambiarVista('usuarios')">
+        <i class="bi bi-person-fill me-3 fs-5"></i>
+        <span>Gestión de Usuarios</span>
+      </button>
 
-  <div style="background-color: #0056b3; padding: 12px 30px; display: flex; gap: 15px;">
-    <button class="btn border-0 rounded-pill px-4 py-1 fw-semibold" 
-            [ngClass]="mostrarTickets ? 'bg-dark text-white' : 'bg-transparent text-white'"
-            style="transition: background-color 0.3s;"
-            (click)="toggleTickets()">
-      Todos los Tickets
-    </button>
-  </div>
+      <button class="btn btn-sidebar-menu text-start" [class.activo]="vistaActual === 'staff' && !mostrarTickets"
+        (click)="cambiarVista('staff')">
+        <i class="bi bi-people-fill me-3 fs-5"></i>
+        <span>Gestión de Staff</span>
+      </button>
+    </aside>
 
-  <div style="flex: 1; padding: 40px 30px;">
-    
-    <div *ngIf="mostrarTickets">
-      
-      <div class="mb-4">
-        <select class="form-select d-inline-block w-auto fw-bold" 
-                [(ngModel)]="areaFiltro" 
-                (change)="filtrarPorArea()"
-                style="background-color: #e9f5ff; color: #0d6efd; border: none; border-radius: 6px; padding: 8px 35px 8px 15px; cursor: pointer; box-shadow: none;">
-          <option value="Todas" selected>Todas las Áreas</option>
-          <option value="Laboratorio de Sistemas">Laboratorio de Sistemas</option>
-          <option value="Laboratorio de Electrónica">Laboratorio de Electrónica</option>
-          <option value="Aulas Generales">Aulas Generales</option>
-          <option value="Oficinas Administrativas">Oficinas Administrativas</option>
-          <option value="Centro de Cómputo / Site">Centro de Cómputo / Site</option>
-        </select>
+    <main style="flex: 1; padding: 40px 30px; display: flex; flex-direction: column;">
+
+      <div *ngIf="mostrarTickets" style="width: 100%;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="mb-0 fw-bold" style="color: #0b1a30;">Tickets Activos</h4>
+
+          <select class="form-select d-inline-block w-auto fw-bold" [(ngModel)]="areaFiltro" (change)="filtrarPorArea()"
+            style="background-color: #e9f5ff; color: #0d6efd; border: none; border-radius: 6px; padding: 8px 35px 8px 15px; cursor: pointer;">
+            <option value="Todas" selected>Todas las Áreas</option>
+            <option value="Soporte de Hardware">Soporte de Hardware (Laptops, PCs, Periféricos)</option>
+            <option value="Software y Aplicaciones">Software y Aplicaciones (Errores, Instalaciones)</option>
+            <option value="Redes y Conectividad">Redes y Conectividad (Wi-Fi, VPN, Internet)</option>
+            <option value="Accesos y Credenciales">Accesos y Credenciales (Cuentas, Contraseñas, Permisos)</option>
+            <option value="Infraestructura y Servidores">Infraestructura y Servidores (Site, BD, Cloud)</option>
+            <option value="Seguridad Informática">Seguridad Informática (Antivirus, Incidencias)</option>
+            <option value="Telefonía y Comunicación">Telefonía y Comunicación (IP, Equipos de junta)</option>
+          </select>
+        </div>
+
+        <!-- Tabla de Tickets Activos -->
+        <div class="card shadow-sm border-0 mb-5" style="border-radius: 12px; overflow: hidden;">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table align-middle mb-0" style="background-color: white;">
+                <thead style="background-color: #0b1a30; color: white; text-align: center;">
+                  <tr>
+                    <th class="py-3">Folio</th>
+                    <th class="py-3">Título</th>
+                    <th class="py-3">Fecha Reportado</th>
+                    <th class="py-3">Detalles</th>
+                    <th class="py-3">Área</th>
+                    <th class="py-3">Estado</th>
+                    <th class="py-3">Asignación</th>
+                    <th class="py-3">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let ticket of ticketsActivos" class="text-center"
+                    style="border-bottom: 1px solid #f0f0f0;">
+                    <td class="fw-bold" style="color: #0d6efd; padding: 15px;">#{{ ticket.correlativo || 'N/A' }}</td>
+                    <td class="text-start fw-semibold" style="padding: 15px;">{{ ticket.titulo }}</td>
+                    <td style="padding: 15px; color: #555;">{{ ticket.fecha_creacion?.toDate() | date: 'dd/MM/yyyy' }}
+                    </td>
+                    <td class="text-start text-muted" style="padding: 15px; max-width: 250px;">{{ ticket.comentario }}
+                    </td>
+                    <td style="padding: 15px;">{{ ticket.area }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="{
+                          'bg-warning text-dark': ticket.estado === 'pendiente', 
+                          'bg-primary text-white': ticket.estado === 'asignado',
+                          'bg-info text-dark': ticket.estado === 'por_cerrar'
+                        }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
+                        {{ ticket.estado === 'por_cerrar' ? 'POR CERRAR' : (ticket.estado | uppercase) }}
+                      </span>
+                    </td>
+                    <td>
+                      <select [hidden]="ticket.estado !== 'pendiente'" #selectTecnico
+                        class="form-select form-select-sm w-auto d-inline-block mx-auto">
+                        <option value="">-- Seleccionar --</option>
+                        <option *ngFor="let tecnico of tecnicos" [value]="tecnico.id">
+                          {{ tecnico.nombres }} {{ tecnico.apellidos }}
+                        </option>
+                      </select>
+                      <span *ngIf="ticket.estado !== 'pendiente'" class="fw-bold text-success">
+                        {{ ticket.nombre_tecnico }}
+                      </span>
+                    </td>
+                    <td>
+                      <button *ngIf="ticket.estado === 'pendiente'" class="btn btn-sm btn-primary fw-bold"
+                        (click)="asignar(ticket.id, selectTecnico.value)">
+                        Asignar
+                      </button>
+                      <span *ngIf="ticket.estado !== 'pendiente'" class="text-muted fw-bold">-</span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="ticketsActivos.length === 0">
+                    <td colspan="8" class="text-center py-4 text-muted">No hay tickets activos en esta área.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de Historial Resueltos -->
+        <h4 class="mb-3 text-secondary fw-bold">Historial de Tickets Resueltos</h4>
+        <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table align-middle mb-0" style="background-color: white;">
+                <thead style="background-color: #6c757d; color: white; text-align: center;">
+                  <tr>
+                    <th class="py-3">Folio</th>
+                    <th class="py-3">Título</th>
+                    <th class="py-3">Fecha</th>
+                    <th class="py-3">Detalles</th>
+                    <th class="py-3">Área</th>
+                    <th class="py-3">Resuelto Por</th>
+                    <th class="py-3">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let ticket of ticketsHistorial" class="text-center"
+                    style="border-bottom: 1px solid #f0f0f0;">
+                    <td class="fw-bold" style="color: #6c757d; padding: 15px;">#{{ ticket.correlativo || 'N/A' }}</td>
+                    <td class="text-start fw-semibold" style="padding: 15px;">{{ ticket.titulo }}</td>
+                    <td style="padding: 15px; color: #555;">{{ ticket.fecha_creacion?.toDate() | date: 'dd/MM/yyyy' }}
+                    </td>
+                    <td class="text-start text-muted" style="padding: 15px; max-width: 250px;">{{ ticket.comentario }}
+                    </td>
+                    <td style="padding: 15px;">{{ ticket.area }}</td>
+                    <td class="fw-bold" style="padding: 15px;">{{ ticket.nombre_tecnico }}</td>
+                    <td>
+                      <span class="badge bg-secondary"
+                        style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">RESUELTO</span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="ticketsHistorial.length === 0">
+                    <td colspan="7" class="text-center py-4 text-muted">No hay tickets en el historial para esta área.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <h4 class="mb-3 fw-bold" style="color: #0b1a30;">Tickets Activos</h4>
-      <div class="card shadow-sm border-0 mb-5" style="border-radius: 12px; overflow: hidden;">
-        <div class="card-body p-0">
-          <div class="table-responsive">
+      <div class="card border-0 shadow-sm" style="border-radius: 12px; width: 100%;"
+        *ngIf="vistaActual === 'usuarios' && !mostrarTickets">
+        <div class="card-body p-4 p-md-5">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="card-title fw-bold mb-0" style="color: #0b1a30;">Gestión de Usuarios</h2>
+            <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario"
+              (click)="prepararRol('usuario')">
+              <i class="bi bi-person-plus-fill me-2"></i>Registrar Usuario
+            </button>
+          </div>
+
+          <div class="table-responsive" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
             <table class="table align-middle mb-0" style="background-color: white;">
-              <thead style="background-color: #0b1a30; color: white; text-align: center;">
+              <thead style="background-color: #0b1a30; color: white;">
                 <tr>
-                  <th class="py-3" style="border: none; font-weight: 600;">Folio</th>
-                  <th class="py-3" style="border: none; font-weight: 600;">Título</th>
-                  <th class="py-3" style="border: none; font-weight: 600;">Detalles</th>
-                  <th class="py-3" style="border: none; font-weight: 600;">Área</th>
-                  <th class="py-3" style="border: none; font-weight: 600;">Estado</th>
-                  <th class="py-3" style="border: none; font-weight: 600;">Asignación</th>
-                  <th class="py-3" style="border: none; font-weight: 600;">Acciones</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">Nombre</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">Apellidos</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">Correo / Cuenta</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">ID / Identificador</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let ticket of ticketsActivos" class="text-center" style="border-bottom: 1px solid #f0f0f0;">
-                  <td class="fw-bold" style="color: #0d6efd; padding: 15px;">#{{ ticket.correlativo || 'N/A' }}</td>
-                  <td class="text-start fw-semibold" style="padding: 15px;">{{ ticket.titulo }}</td>
-                  <td class="text-start text-muted" style="padding: 15px; max-width: 250px;">{{ ticket.comentario }}</td>
-                  <td style="padding: 15px;">{{ ticket.area }}</td>
-                  <td style="padding: 15px;">
-                    <span class="badge" [ngClass]="{
-                        'bg-warning text-dark': ticket.estado === 'pendiente', 
-                        'bg-primary text-white': ticket.estado === 'asignado',
-                        'bg-info text-dark': ticket.estado === 'por_cerrar'
-                      }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
-                      {{ ticket.estado === 'por_cerrar' ? 'POR CERRAR' : (ticket.estado | uppercase) }}
-                    </span>
-                  </td>
-                  <td style="padding: 15px;">
-                    <select [hidden]="ticket.estado !== 'pendiente'" #selectTecnico class="form-select form-select-sm w-auto d-inline-block mx-auto">
-                      <option value="">-- Seleccionar --</option>
-                      <option *ngFor="let tecnico of tecnicos" [value]="tecnico.id">
-                        {{ tecnico.nombres }} {{ tecnico.apellidos }}
-                      </option>
-                    </select>
-                    <span *ngIf="ticket.estado !== 'pendiente'" class="fw-bold text-success">
-                      {{ ticket.nombre_tecnico }}
-                    </span>
-                  </td>
-                  <td style="padding: 15px;">
-                    <button *ngIf="ticket.estado === 'pendiente'" class="btn btn-sm btn-primary fw-bold" (click)="asignar(ticket.id, selectTecnico.value)">
-                      Asignar
-                    </button>
-                    <span *ngIf="ticket.estado !== 'pendiente'" class="text-muted fw-bold">-</span>
-                  </td>
+                <tr *ngFor="let usuario of usuarios" style="border-bottom: 1px solid #f0f0f0;">
+                  <td style="padding: 15px; color: #333; font-weight: bold;">{{ usuario.nombres }}</td>
+                  <td style="padding: 15px; color: #333;">{{ usuario.apellidos }}</td>
+                  <td style="padding: 15px; color: #555;">{{ usuario.correo }}</td>
+                  <td style="padding: 15px; color: #333;">{{ usuario.idUsuario }}</td>
                 </tr>
-                <tr *ngIf="ticketsActivos.length === 0">
-                  <td colspan="7" class="text-center py-4 text-muted">No hay tickets activos en esta área.</td>
+                <tr *ngIf="usuarios.length === 0">
+                  <td colspan="4" class="text-center py-4 text-muted">No hay usuarios registrados.</td>
                 </tr>
               </tbody>
             </table>
@@ -121,34 +198,42 @@
         </div>
       </div>
 
-      <h4 class="mb-3 text-secondary fw-bold">Historial de Tickets Resueltos</h4>
-      <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
-        <div class="card-body p-0">
-          <div class="table-responsive">
+      <div class="card border-0 shadow-sm" style="border-radius: 12px; width: 100%;"
+        *ngIf="vistaActual === 'staff' && !mostrarTickets">
+        <div class="card-body p-4 p-md-5">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="card-title fw-bold mb-0" style="color: #0b1a30;">Gestión de Técnicos (Staff)</h2>
+            <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario"
+              (click)="prepararRol('tecnico')">
+              <i class="bi bi-shield-plus me-2"></i>Registrar Técnico
+            </button>
+          </div>
+
+          <div class="table-responsive" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
             <table class="table align-middle mb-0" style="background-color: white;">
-              <thead style="background-color: #6c757d; color: white; text-align: center;">
+              <thead style="background-color: #0b1a30; color: white;">
                 <tr>
-                  <th class="py-3" style="border: none; font-weight: 600;">Folio</th>
-                  <th class="py-3" style="border: none; font-weight: 600;">Título</th>
-                  <th class="py-3" style="border: none; font-weight: 600;">Detalles</th>
-                  <th class="py-3" style="border: none; font-weight: 600;">Área</th>
-                  <th class="py-3" style="border: none; font-weight: 600;">Resuelto Por</th>
-                  <th class="py-3" style="border: none; font-weight: 600;">Estado</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">Nombre del Técnico</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">Correo / Cuenta</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">ID Interno</th>
+                  <th style="font-weight: 600; padding: 15px; border: none;">Rol</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let ticket of ticketsHistorial" class="text-center" style="border-bottom: 1px solid #f0f0f0;">
-                  <td class="fw-bold" style="color: #6c757d; padding: 15px;">#{{ ticket.correlativo || 'N/A' }}</td>
-                  <td class="text-start fw-semibold" style="padding: 15px;">{{ ticket.titulo }}</td>
-                  <td class="text-start text-muted" style="padding: 15px; max-width: 250px;">{{ ticket.comentario }}</td>
-                  <td style="padding: 15px;">{{ ticket.area }}</td>
-                  <td class="fw-bold" style="padding: 15px;">{{ ticket.nombre_tecnico }}</td>
+                <tr *ngFor="let tecnico of tecnicos" style="border-bottom: 1px solid #f0f0f0;">
+                  <td style="padding: 15px; color: #333; font-weight: bold;">{{ tecnico.nombres }} {{ tecnico.apellidos
+                    }}</td>
+                  <td style="padding: 15px; color: #555;">{{ tecnico.correo }}</td>
+                  <td style="padding: 15px; color: #333;">{{ tecnico.idUsuario }}</td>
                   <td style="padding: 15px;">
-                    <span class="badge bg-secondary" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">RESUELTO</span>
+                    <span
+                      style="background-color: #0d6efd; color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                      Técnico de Soporte
+                    </span>
                   </td>
                 </tr>
-                <tr *ngIf="ticketsHistorial.length === 0">
-                  <td colspan="6" class="text-center py-4 text-muted">No hay tickets en el historial para esta área.</td>
+                <tr *ngIf="tecnicos.length === 0">
+                  <td colspan="4" class="text-center py-4 text-muted">No hay técnicos en el sistema.</td>
                 </tr>
               </tbody>
             </table>
@@ -156,75 +241,66 @@
         </div>
       </div>
 
-    </div> 
-
-
-
-    <div class="card border-0 shadow-sm" style="border-radius: 12px;" *ngIf="vistaActual === 'usuarios' && !mostrarTickets">
-      <div class="card-body p-4 p-md-5">
-        <h2 class="card-title fw-bold mb-4" style="color: #0b1a30;">Gestión de Usuarios</h2>
-        <div class="table-responsive" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
-          <table class="table align-middle mb-0" style="background-color: white;">
-            <thead style="background-color: #0b1a30; color: white;">
-              <tr>
-                <th style="font-weight: 600; padding: 15px; border: none;">Nombre</th>
-                <th style="font-weight: 600; padding: 15px; border: none;">Apellidos</th>
-                <th style="font-weight: 600; padding: 15px; border: none;">ID / Identificador</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let usuario of usuarios" style="border-bottom: 1px solid #f0f0f0;">
-                <td style="padding: 15px; color: #333; font-weight: bold;">{{ usuario.nombres }}</td>
-                <td style="padding: 15px; color: #333;">{{ usuario.apellidos }}</td>
-                <td style="padding: 15px; color: #333;">{{ usuario.id }}</td>
-              </tr>
-              <tr *ngIf="usuarios.length === 0">
-                <td colspan="3" class="text-center py-4 text-muted">No hay usuarios registrados.</td>
-              </tr>
-            </tbody>
-          </table>
+      <div class="card border-0 shadow-sm flex-grow-1 d-flex align-items-center justify-content-center"
+        *ngIf="vistaActual === 'panel' && !mostrarTickets"
+        style="border-radius: 12px; background-color: white; min-height: 70vh;">
+        <div class="text-center text-muted p-5">
+          <h3 class="fw-bold mb-2" style="color: #334155; font-size: 1.75rem;">Panel de Administrador</h3>
+          <p style="color: #64748b; font-size: 1rem; max-width: 450px;">
+            Selecciona una opción del menú o abre los tickets para gestionar el sistema.
+          </p>
         </div>
       </div>
-    </div>
 
+    </main>
+  </div>
+</div>
 
-
-    <div class="card border-0 shadow-sm" style="border-radius: 12px;" *ngIf="vistaActual === 'staff' && !mostrarTickets">
-      <div class="card-body p-4 p-md-5">
-        <h2 class="card-title fw-bold mb-4" style="color: #0b1a30;">Gestión de Técnicos (Staff)</h2>
-        <div class="table-responsive" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
-          <table class="table align-middle mb-0" style="background-color: white;">
-            <thead style="background-color: #0b1a30; color: white;">
-              <tr>
-                <th style="font-weight: 600; padding: 15px; border: none;">Nombre del Técnico</th>
-                <th style="font-weight: 600; padding: 15px; border: none;">Rol</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let tecnico of tecnicos" style="border-bottom: 1px solid #f0f0f0;">
-                <td style="padding: 15px; color: #333; font-weight: bold;">{{ tecnico.nombres }} {{ tecnico.apellidos }}</td>
-                <td style="padding: 15px;">
-                  <span style="background-color: #0d6efd; color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
-                    Técnico de Soporte
-                  </span>
-                </td>
-              </tr>
-              <tr *ngIf="tecnicos.length === 0">
-                <td colspan="2" class="text-center py-4 text-muted">No hay técnicos en el sistema.</td>
-              </tr>
-            </tbody>
-          </table>
+<!-- Busca el Modal del HTML previo y reemplaza el bloque por este: -->
+<div class="modal fade" id="modalNuevoUsuario" tabindex="-1" aria-labelledby="modalUsuarioTitulo" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+      <div class="modal-header bg-primary text-white" style="border-radius: 12px 12px 0 0;">
+        <h5 class="modal-title fw-bold" id="modalUsuarioTitulo">Registrar Nueva Cuenta</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold text-dark">Nombre(s)</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevaCuenta.nombres" placeholder="Ej. Juan">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold text-dark">Apellidos</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevaCuenta.apellidos" placeholder="Ej. Pérez">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-dark">ID Generado Automáticamente</label>
+          <!-- Se le añade readonly para que se muestre el texto generado sin permitir edición manual -->
+          <input type="text" class="form-control bg-light fw-bold" [(ngModel)]="nuevaCuenta.idUsuario" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-dark">Usuario / Correo Electrónico</label>
+          <input type="email" class="form-control" [(ngModel)]="nuevaCuenta.correo" placeholder="usuario@empresa.com">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-dark">Contraseña Temporal</label>
+          <input type="password" class="form-control" [(ngModel)]="nuevaCuenta.contrasena"
+            placeholder="Contraseña segura">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-dark">Rol en el Sistema</label>
+          <select class="form-select" [(ngModel)]="nuevaCuenta.rol">
+            <option value="usuario">Usuario (Reporta problemas)</option>
+            <option value="tecnico">Técnico (Resuelve incidentes)</option>
+          </select>
         </div>
       </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary fw-bold" (click)="registrarCuenta()">Guardar Cuenta</button>
+      </div>
     </div>
-
-
-
-    <div class="text-center text-muted mt-5" *ngIf="vistaActual === 'panel' && !mostrarTickets">
-      <i class="bi bi-speedometer2" style="font-size: 4rem; color: #dee2e6;"></i>
-      <h3 class="mt-3">Panel de Administrador</h3>
-      <p>Selecciona una opción del menú o abre los tickets para gestionar el sistema.</p>
-    </div>
-
-  </div> 
+  </div>
 </div>
