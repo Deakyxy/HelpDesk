@@ -1,7 +1,7 @@
 <nav class="top-navbar" style="background-color: #0b1a30; padding: 10px 30px;">
   <div class="nav-content" style="display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto;">
     <h5 class="m-0 text-white">
-      Bienvenido, <span class="text-info">{{ usuario.nombres }} {{ usuario.apellidos }}</span>
+      Bienvenido Tenico: <span class="text-info">{{ usuario.nombres }} {{ usuario.apellidos }}</span>
     </h5>
     <button class="btn btn-danger text-white fw-semibold px-3 py-1 rounded-3 border-0" (click)="cerrarSesion()">
       Cerrar Sesión
@@ -48,11 +48,13 @@
                     (change)="filtrarPorArea()"
                     style="background-color: #e9f5ff; color: #0d6efd; border: none; border-radius: 6px; padding: 8px 35px 8px 15px; cursor: pointer; box-shadow: none;">
               <option value="Todas" selected>Todas las Áreas</option>
-              <option value="Laboratorio de Sistemas">Laboratorio de Sistemas</option>
-              <option value="Laboratorio de Electrónica">Laboratorio de Electrónica</option>
-              <option value="Aulas Generales">Aulas Generales</option>
-              <option value="Oficinas Administrativas">Oficinas Administrativas</option>
-              <option value="Centro de Cómputo / Site">Centro de Cómputo / Site</option>
+              <option value="Soporte de Hardware">Soporte de Hardware (Laptops, PCs, Periféricos)</option>
+              <option value="Software y Aplicaciones">Software y Aplicaciones (Errores, Instalaciones)</option>
+              <option value="Redes y Conectividad">Redes y Conectividad (Wi-Fi, VPN, Internet)</option>
+              <option value="Accesos y Credenciales">Accesos y Credenciales (Cuentas, Contraseñas, Permisos)</option>
+              <option value="Infraestructura y Servidores">Infraestructura y Servidores (Site, BD, Cloud)</option>
+              <option value="Seguridad Informática">Seguridad Informática (Antivirus, Incidencias)</option>
+              <option value="Telefonía y Comunicación">Telefonía y Comunicación (IP, Equipos de junta)</option>
             </select>
           </div>
 
@@ -63,6 +65,7 @@
                 <tr>
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Número</th>
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Título</th>
+                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Fecha</th>
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Área</th>
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Detalles</th>
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Estado</th>
@@ -73,6 +76,7 @@
                 <tr *ngFor="let tarea of tareasActivas" style="border-bottom: 1px solid #f0f0f0;">
                   <td class="fw-bold" style="padding: 15px;">#{{ tarea.correlativo || 'N/A' }}</td>
                   <td class="fw-semibold" style="padding: 15px;">{{ tarea.titulo }}</td>
+                  <td style="padding: 15px; color: #555;">{{ tarea.fecha_creacion?.toDate() | date: 'dd/MM/yyyy' }}</td>
                   <td style="padding: 15px;">{{ tarea.area }}</td>
                   <td class="text-muted text-truncate" style="max-width: 200px; padding: 15px;">{{ tarea.comentario }}</td>
                   <td style="padding: 15px;">
@@ -88,7 +92,7 @@
                   </td>
                 </tr>
                 <tr *ngIf="tareasActivas.length === 0">
-                  <td colspan="6" class="text-center py-4 text-muted">No tienes tareas asignadas pendientes en esta área.</td>
+                  <td colspan="7" class="text-center py-4 text-muted">No tienes tareas asignadas pendientes en esta área.</td>
                 </tr>
               </tbody>
             </table>
@@ -101,6 +105,7 @@
                 <tr>
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Número</th>
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Título</th>
+                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Fecha</th>
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Área</th>
                   <th style="font-weight: 600; padding: 12px 15px; border: none;">Estado</th>
                 </tr>
@@ -109,11 +114,12 @@
                 <tr *ngFor="let tarea of tareasHistorial" style="border-bottom: 1px solid #f0f0f0;">
                   <td class="fw-bold" style="padding: 15px;">#{{ tarea.correlativo || 'N/A' }}</td>
                   <td class="fw-semibold" style="padding: 15px;">{{ tarea.titulo }}</td>
+                  <td style="padding: 15px; color: #555;">{{ tarea.fecha_creacion?.toDate() | date: 'dd/MM/yyyy' }}</td>
                   <td style="padding: 15px;">{{ tarea.area }}</td>
                   <td style="padding: 15px;"><span class="badge bg-secondary">Resuelto</span></td>
                 </tr>
                 <tr *ngIf="tareasHistorial.length === 0">
-                  <td colspan="4" class="text-center py-4 text-muted">Aún no has resuelto ningún ticket.</td>
+                  <td colspan="5" class="text-center py-4 text-muted">Aún no has resuelto ningún ticket.</td>
                 </tr>
               </tbody>
             </table>
@@ -133,7 +139,7 @@
         <h5 class="modal-title fw-bold" id="tituloModalTecnico">Detalles del Nuevo Reporte</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-      <div class="modal-body p-4">
+        <div class="modal-body p-4">
         <div class="mb-3">
           <label class="form-label fw-semibold text-dark">Título del Problema</label>
           <input type="text" class="form-control" [(ngModel)]="nuevoTicket.titulo" placeholder="Ej. Falla crítica en servidor">
@@ -147,6 +153,15 @@
             <option value="Aulas Generales">Aulas Generales</option>
             <option value="Oficinas Administrativas">Oficinas Administrativas</option>
             <option value="Centro de Cómputo / Site">Centro de Cómputo / Site</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-dark">Usuario Afectado</label>
+          <select class="form-select" [(ngModel)]="nuevoTicket.idUsuarioAfectado">
+            <option value="" disabled selected>-- Seleccionar Usuario --</option>
+            <option *ngFor="let user of usuarios" [value]="user.idUsuario || user.id">
+              {{ user.nombres }} {{ user.apellidos }}
+            </option>
           </select>
         </div>
         <div class="mb-3">

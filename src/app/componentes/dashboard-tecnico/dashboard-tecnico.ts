@@ -22,19 +22,18 @@ export class DashboardTecnicoComponent {
   
   usuario = new Usuario();
   mostrarTablas: boolean = false;
-  
   areaFiltro: string = 'Todas';
-  todasLasTareasActivas: any[] = [];
   
+  todasLasTareasActivas: any[] = [];
   tareasActivas: any[] = [];
   tareasHistorial: any[] = [];
-  misSolicitudesActivas: any[] = [];
-  misSolicitudesHistorial: any[] = [];
+  usuarios: any[] = [];
 
   nuevoTicket = {
     titulo: '',
     area: '',
-    comentario: ''
+    comentario: '',
+    idUsuarioAfectado: ''
   };
 
   constructor() {
@@ -50,19 +49,17 @@ export class DashboardTecnicoComponent {
         }
       }); 
 
+      let qUsuarios = query(loginCollection, where("rol", "==", "usuario"));
+      collectionData(qUsuarios, { idField: 'id' }).subscribe((datos: any[]) => {
+        this.usuarios = datos;
+      });
+
       let ticketsRef = collection(this.firestore, "Tickets");
-      
       let qAsignados = query(ticketsRef, where("id_tecnico", "==", this.usuario.idusuario));
       collectionData(qAsignados, { idField: 'id' }).subscribe((datos: any[]) => {
         this.todasLasTareasActivas = datos.filter(t => t.estado === 'asignado' || t.estado === 'por_cerrar');
         this.filtrarPorArea();
         this.tareasHistorial = datos.filter(t => t.estado === 'resuelto');
-      });
-
-      let qCreados = query(ticketsRef, where("id_creador", "==", this.usuario.idusuario));
-      collectionData(qCreados, { idField: 'id' }).subscribe((datos: any[]) => {
-        this.misSolicitudesActivas = datos.filter(t => t.estado !== 'resuelto');
-        this.misSolicitudesHistorial = datos.filter(t => t.estado === 'resuelto');
       });
     }
   }
@@ -76,7 +73,7 @@ export class DashboardTecnicoComponent {
   }
 
   async crearTicket() {
-    if (!this.nuevoTicket.titulo || !this.nuevoTicket.area || !this.nuevoTicket.comentario) {
+    if (!this.nuevoTicket.titulo || !this.nuevoTicket.area || !this.nuevoTicket.comentario || !this.nuevoTicket.idUsuarioAfectado) {
       Swal.fire({
         icon: 'warning',
         title: 'Campos incompletos',
@@ -105,6 +102,9 @@ export class DashboardTecnicoComponent {
         nuevoNumero = (data['idultimoticket'] || 0) + 1;
       }
 
+      const userSeleccionado = this.usuarios.find(u => u.idUsuario === this.nuevoTicket.idUsuarioAfectado || u.id === this.nuevoTicket.idUsuarioAfectado);
+      const nombreUsuario = userSeleccionado ? `${userSeleccionado.nombres} ${userSeleccionado.apellidos}`.trim() : 'Usuario Desconocido';
+
       const ticketsCollection = collection(this.firestore, "Tickets");
       await addDoc(ticketsCollection, {
         correlativo: nuevoNumero,
@@ -113,8 +113,9 @@ export class DashboardTecnicoComponent {
         comentario: this.nuevoTicket.comentario,
         estado: "pendiente",
         id_tecnico: "",
-        id_creador: this.usuario.idusuario,
-        nombre_creador: `${this.usuario.nombres} ${this.usuario.apellidos}`.trim()
+        id_creador: this.nuevoTicket.idUsuarioAfectado,
+        nombre_creador: nombreUsuario,
+        creado_por: this.usuario.idusuario
       });
 
       await updateDoc(contadorRef, {
@@ -134,10 +135,9 @@ export class DashboardTecnicoComponent {
         showConfirmButton: false
       });
 
-      this.nuevoTicket = { titulo: '', area: '', comentario: '' }; 
+      this.nuevoTicket = { titulo: '', area: '', comentario: '', idUsuarioAfectado: '' }; 
 
     } catch (error) {
-      console.error(error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
