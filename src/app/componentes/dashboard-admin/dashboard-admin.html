@@ -1,315 +1,221 @@
 <div style="display: flex; flex-direction: column; min-height: 100vh; background-color: #f4f6f9;">
-
-  <nav
-    style="background-color: #0b1a30; padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">
-    <span style="color: white; font-size: 15px; font-weight: 500;">
-      Bienvenido, <span style="color: #38b6ff; font-weight: 600;">{{ adminData.nombres }} {{ adminData.apellidos
-        }}</span>
+  
+  <nav style="background-color: #0b1a30; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
+    <span style="color: white; font-size: 1rem;">
+      Bienvenido, <span style="color: #38bdf8; font-weight: 600;">Admin</span>
     </span>
-    <button class="btn btn-outline-danger fw-semibold px-3 py-1 rounded-3" (click)="cerrarSesion()">
+    <button class="btn btn-outline-danger fw-semibold px-4 py-1" style="border-radius: 6px;" (click)="cerrarSesion()">
       Cerrar Sesión
     </button>
   </nav>
 
   <div style="display: flex; flex: 1;">
-
-    <aside
-      style="width: 260px; background-color: #eef2f7; border-right: 1px solid #dee2e6; padding: 20px 15px; display: flex; flex-direction: column; gap: 8px;">
-      <button class="btn btn-sidebar-menu text-start" [class.activo]="mostrarTickets" (click)="toggleTickets()">
-        <i class="bi bi-envelope me-3 fs-5"></i>
-        <span>Todos los Tickets</span>
+    
+    <div style="width: 250px; background-color: #f4f6f9; border-right: 1px solid #dee2e6; padding-top: 20px;">
+      <button class="btn border-0 w-100 text-start" 
+              style="padding: 15px 30px; font-weight: 500; transition: background-color 0.2s;"
+              [ngStyle]="{'background-color': mostrarTickets ? '#e9ecef' : 'transparent', 'color': mostrarTickets ? '#0b1a30' : '#4f5d75'}"
+              (click)="toggleTickets()">
+        Todos los Tickets
       </button>
-
-      <button class="btn btn-sidebar-menu text-start" [class.activo]="vistaActual === 'usuarios' && !mostrarTickets"
-        (click)="cambiarVista('usuarios')">
-        <i class="bi bi-person-fill me-3 fs-5"></i>
-        <span>Gestión de Usuarios</span>
+      <button class="btn border-0 w-100 text-start" 
+              style="padding: 15px 30px; font-weight: 500; transition: background-color 0.2s;"
+              [ngStyle]="{'background-color': vistaActual === 'usuarios' && !mostrarTickets ? '#e9ecef' : 'transparent', 'color': vistaActual === 'usuarios' && !mostrarTickets ? '#0b1a30' : '#4f5d75'}"
+              (click)="cambiarVista('usuarios')">
+        Gestión de Usuarios
       </button>
-
-      <button class="btn btn-sidebar-menu text-start" [class.activo]="vistaActual === 'staff' && !mostrarTickets"
-        (click)="cambiarVista('staff')">
-        <i class="bi bi-people-fill me-3 fs-5"></i>
-        <span>Gestión de Staff</span>
+      <button class="btn border-0 w-100 text-start" 
+              style="padding: 15px 30px; font-weight: 500; transition: background-color 0.2s;"
+              [ngStyle]="{'background-color': vistaActual === 'staff' && !mostrarTickets ? '#e9ecef' : 'transparent', 'color': vistaActual === 'staff' && !mostrarTickets ? '#0b1a30' : '#4f5d75'}"
+              (click)="cambiarVista('staff')">
+        Gestión de Staff
       </button>
-    </aside>
-
-    <main style="flex: 1; padding: 40px 30px; display: flex; flex-direction: column;">
-
-      <div *ngIf="mostrarTickets" style="width: 100%;">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h4 class="mb-0 fw-bold" style="color: #0b1a30;">Tickets Activos</h4>
-
-          <select class="form-select d-inline-block w-auto fw-bold" [(ngModel)]="areaFiltro" (change)="filtrarPorArea()"
-            style="background-color: #e9f5ff; color: #0d6efd; border: none; border-radius: 6px; padding: 8px 35px 8px 15px; cursor: pointer;">
-            <option value="Todas" selected>Todas las Áreas</option>
-            <option value="Soporte de Hardware">Soporte de Hardware (Laptops, PCs, Periféricos)</option>
-            <option value="Software y Aplicaciones">Software y Aplicaciones (Errores, Instalaciones)</option>
-            <option value="Redes y Conectividad">Redes y Conectividad (Wi-Fi, VPN, Internet)</option>
-            <option value="Accesos y Credenciales">Accesos y Credenciales (Cuentas, Contraseñas, Permisos)</option>
-            <option value="Infraestructura y Servidores">Infraestructura y Servidores (Site, BD, Cloud)</option>
-            <option value="Seguridad Informática">Seguridad Informática (Antivirus, Incidencias)</option>
-            <option value="Telefonía y Comunicación">Telefonía y Comunicación (IP, Equipos de junta)</option>
-          </select>
-        </div>
-
-        <!-- Tabla de Tickets Activos Corregida -->
-<div class="card shadow-sm border-0 mb-5" style="border-radius: 12px; overflow: hidden;">
-  <div class="card-body p-0">
-    <div class="table-responsive">
-      <table class="table align-middle mb-0" style="background-color: white;">
-        <thead style="background-color: #0b1a30; color: white; text-align: center;">
-          <tr>
-            <th class="py-3">Folio</th>
-            <th class="py-3">Título</th>
-            <th class="py-3">Fecha Reportado</th>
-            <th class="py-3">Detalles</th>
-            <th class="py-3">Área</th>
-            <th class="py-3">Estado</th>
-            <th class="py-3">Asignación</th>
-            <th class="py-3">Acciones</th>
-            <th class="py-3">Prioridad</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let ticket of ticketsActivos" class="text-center" style="border-bottom: 1px solid #f0f0f0;">
-            <td class="fw-bold" style="color: #0d6efd; padding: 15px;">#{{ ticket.correlativo || 'N/A' }}</td>
-            <td class="text-start fw-semibold" style="padding: 15px;">{{ ticket.titulo }}</td>
-            
-            <!-- 1. Fecha colocada correctamente alineada con su encabezado -->
-            <td style="padding: 15px; color: #555;">{{ ticket.fecha_creacion?.toDate() | date: 'dd/MM/yyyy' }}</td>
-            
-            <td class="text-start text-muted" style="padding: 15px; max-width: 250px;">{{ ticket.comentario }}</td>
-            <td style="padding: 15px;">{{ ticket.area }}</td>
-            <td>
-              <span class="badge" [ngClass]="{
-                  'bg-warning text-dark': ticket.estado === 'pendiente', 
-                  'bg-primary text-white': ticket.estado === 'asignado',
-                  'bg-info text-dark': ticket.estado === 'por_cerrar'
-                }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
-                {{ ticket.estado === 'por_cerrar' ? 'POR CERRAR' : (ticket.estado | uppercase) }}
-              </span>
-            </td>
-            
-            <!-- 2. Contenedor de asignación unificado para evitar desfases -->
-            <td style="padding: 15px; min-width: 180px;">
-              <select [hidden]="ticket.estado !== 'pendiente'" #selectTecnico class="form-select form-select-sm w-auto mx-auto">
-                <option value="">-- Seleccionar --</option>
-                <option *ngFor="let tecnico of tecnicos" [value]="tecnico.id">
-                  {{ tecnico.nombres }} {{ tecnico.apellidos }}
-                </option>
-              </select>
-              <span *ngIf="ticket.estado !== 'pendiente'" class="fw-bold text-success">
-                {{ ticket.nombre_tecnico }}
-              </span>
-            </td>
-            
-            <!-- 3. Acciones alineadas correspondientemente -->
-            <td style="padding: 15px;">
-              <button *ngIf="ticket.estado === 'pendiente'" class="btn btn-sm btn-primary fw-bold" (click)="asignar(ticket.id, selectTecnico.value)">
-                Asignar
-              </button>
-              <span *ngIf="ticket.estado !== 'pendiente'" class="text-muted fw-bold">-</span>
-            </td>
-            <td style="padding: 15px;">
-              <span class="badge" [ngClass]="{
-                'bg-danger text-white': ticket.prioridad === 'Alta', 
-                'bg-warning text-dark': ticket.prioridad === 'Media',
-                'bg-success text-white': ticket.prioridad === 'Baja',
-                'bg-secondary text-white': !ticket.prioridad
-                }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
-                {{ ticket.prioridad ? (ticket.prioridad | uppercase) : 'N/A' }}
-                </span>
-              </td>           
-          </tr>
-          <tr *ngIf="ticketsActivos.length === 0">
-            <td colspan="8" class="text-center py-4 text-muted">No hay tickets activos en esta área.</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
-  </div>
-</div>
 
-        <h4 class="mb-3 text-secondary fw-bold">Historial de Tickets Resueltos</h4>
-        <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
-          <div class="card-body p-0">
-            <div class="table-responsive">
+    <div style="flex: 1; padding: 30px;">
+      <div class="card border-0 shadow-sm" style="border-radius: 12px; min-height: 80vh; background-color: white;">
+        <div class="card-body p-4 p-md-5" style="display: flex; flex-direction: column;">
+          
+          <div *ngIf="mostrarTickets">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h3 class="fw-bold m-0" style="color: #0b1a30;">Tickets Activos</h3>
+              <select class="form-select d-inline-block w-auto fw-bold text-primary" 
+                      [(ngModel)]="areaFiltro" 
+                      (change)="filtrarPorArea()"
+                      style="background-color: transparent; border: none; cursor: pointer; box-shadow: none;">
+                <option value="Todas" selected>Todas las Áreas</option>
+                <option value="Soporte de Hardware">Soporte de Hardware</option>
+                <option value="Software y Aplicaciones">Software y Aplicaciones</option>
+                <option value="Redes y Conectividad">Redes y Conectividad</option>
+                <option value="Accesos y Credenciales">Accesos y Credenciales</option>
+                <option value="Infraestructura y Servidores">Infraestructura y Servidores</option>
+                <option value="Seguridad Informática">Seguridad Informática</option>
+                <option value="Telefonía y Comunicación">Telefonía y Comunicación</option>
+              </select>
+            </div>
+
+            <div class="table-responsive mb-5" style="border: 1px solid #dee2e6; border-radius: 8px;">
               <table class="table align-middle mb-0" style="background-color: white;">
-                <thead style="background-color: #6c757d; color: white; text-align: center;">
+                <thead style="background-color: white; border-bottom: 2px solid #dee2e6;">
                   <tr>
-                    <th class="py-3">Folio</th>
-                    <th class="py-3">Título</th>
-                    <th class="py-3">Fecha</th>
-                    <th class="py-3">Detalles</th>
-                    <th class="py-3">Área</th>
-                    <th class="py-3">Resuelto Por</th>
-                    <th class="py-3">Estado</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Folio</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Título</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Fecha Reportado</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Detalles</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Área</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Prioridad</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Estado</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Asignación</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let ticket of ticketsHistorial" class="text-center"
-                    style="border-bottom: 1px solid #f0f0f0;">
+                  <tr *ngFor="let ticket of ticketsActivos" style="border-bottom: 1px solid #f0f0f0;">
+                    <td class="fw-bold" style="color: #0d6efd; padding: 15px;">#{{ ticket.correlativo || 'N/A' }}</td>
+                    <td class="text-start fw-semibold" style="padding: 15px;">{{ ticket.titulo }}</td>
+                    <td style="padding: 15px;">{{ ticket.fecha_creacion?.toDate() | date: 'dd/MM/yyyy' }}</td>
+                    <td class="text-muted" style="padding: 15px; max-width: 200px;">{{ ticket.comentario }}</td>
+                    <td style="padding: 15px;">{{ ticket.area }}</td>
+                    
+                    <td style="padding: 15px;">
+                      <select *ngIf="ticket.estado === 'pendiente'" 
+                              [(ngModel)]="ticket.prioridad" 
+                              class="form-select form-select-sm fw-semibold"
+                              [ngClass]="{
+                                'text-danger': ticket.prioridad === 'Alta',
+                                'text-warning': ticket.prioridad === 'Media',
+                                'text-success': ticket.prioridad === 'Baja'
+                              }" style="min-width: 90px; cursor: pointer;">
+                        <option value="Alta" class="text-danger fw-bold">Alta</option>
+                        <option value="Media" class="text-warning fw-bold">Media</option>
+                        <option value="Baja" class="text-success fw-bold">Baja</option>
+                      </select>
+
+                      <span *ngIf="ticket.estado !== 'pendiente'" class="badge" [ngClass]="{
+                          'bg-danger text-white': ticket.prioridad === 'Alta',
+                          'bg-warning text-dark': ticket.prioridad === 'Media',
+                          'bg-success text-white': ticket.prioridad === 'Baja',
+                          'bg-secondary text-white': !ticket.prioridad
+                        }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
+                        {{ ticket.prioridad ? (ticket.prioridad | uppercase) : 'N/A' }}
+                      </span>
+                    </td>
+
+                    <td style="padding: 15px;">
+                      <span class="badge" [ngClass]="{
+                          'bg-warning text-dark': ticket.estado === 'pendiente', 
+                          'bg-primary text-white': ticket.estado === 'asignado',
+                          'bg-info text-dark': ticket.estado === 'por_cerrar'
+                        }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
+                        {{ ticket.estado === 'por_cerrar' ? 'POR CERRAR' : (ticket.estado | uppercase) }}
+                      </span>
+                    </td>
+                    
+                    <td style="padding: 15px;">
+                      <select [hidden]="ticket.estado !== 'pendiente'" #selectTecnico class="form-select form-select-sm w-auto d-inline-block mx-auto">
+                        <option value="">-- Seleccionar --</option>
+                        <option *ngFor="let tecnico of tecnicos" [value]="tecnico.id">
+                          {{ tecnico.nombres }} {{ tecnico.apellidos }}
+                        </option>
+                      </select>
+                      <div *ngIf="ticket.estado !== 'pendiente'" class="fw-bold" style="color: #198754; text-align: center;">
+                        {{ ticket.nombre_tecnico }}
+                      </div>
+                    </td>
+                    
+                    <td style="padding: 15px;">
+                      <button *ngIf="ticket.estado === 'pendiente'" class="btn btn-sm btn-primary fw-bold" (click)="asignar(ticket.id, selectTecnico.value, ticket.prioridad)">
+                        Asignar
+                      </button>
+                      <span *ngIf="ticket.estado !== 'pendiente'" class="text-muted fw-bold">-</span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="ticketsActivos.length === 0">
+                    <td colspan="9" class="text-center py-4 text-muted">No hay tickets activos en esta área.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="fw-bold mb-4 mt-5" style="color: #0b1a30;">Historial de Tickets Resueltos</h3>
+            <div class="table-responsive" style="border: 1px solid #dee2e6; border-radius: 8px;">
+              <table class="table align-middle mb-0" style="background-color: white;">
+                <thead style="background-color: white; border-bottom: 2px solid #dee2e6;">
+                  <tr>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Folio</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Título</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Detalles</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Área</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Resuelto Por</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let ticket of ticketsHistorial" style="border-bottom: 1px solid #f0f0f0;">
                     <td class="fw-bold" style="color: #6c757d; padding: 15px;">#{{ ticket.correlativo || 'N/A' }}</td>
                     <td class="text-start fw-semibold" style="padding: 15px;">{{ ticket.titulo }}</td>
-                    <td style="padding: 15px; color: #555;">{{ ticket.fecha_creacion?.toDate() | date: 'dd/MM/yyyy' }}
-                    </td>
-                    <td class="text-start text-muted" style="padding: 15px; max-width: 250px;">{{ ticket.comentario }}
-                    </td>
+                    <td class="text-muted" style="padding: 15px; max-width: 250px;">{{ ticket.comentario }}</td>
                     <td style="padding: 15px;">{{ ticket.area }}</td>
-                    <td class="fw-bold" style="padding: 15px;">{{ ticket.nombre_tecnico }}</td>
-                    <td>
-                      <span class="badge bg-secondary"
-                        style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">RESUELTO</span>
+                    <td class="fw-bold" style="padding: 15px; color: #198754;">{{ ticket.nombre_tecnico }}</td>
+                    <td style="padding: 15px;">
+                      <span class="badge bg-secondary" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">RESUELTO</span>
                     </td>
                   </tr>
                   <tr *ngIf="ticketsHistorial.length === 0">
-                    <td colspan="7" class="text-center py-4 text-muted">No hay tickets en el historial para esta área.
+                    <td colspan="6" class="text-center py-4 text-muted">No hay tickets en el historial para esta área.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+
+          <div *ngIf="vistaActual === 'usuarios' && !mostrarTickets">
+            <h2 class="card-title fw-bold mb-4" style="color: #0b1a30;">Gestión de Usuarios</h2>
+            <div class="table-responsive" style="border: 1px solid #dee2e6; border-radius: 8px;">
+              <table class="table align-middle mb-0" style="background-color: white;">
+                <thead style="background-color: white; border-bottom: 2px solid #dee2e6;">
+                  <tr>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Nombre</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Apellidos</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">ID / Identificador</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let user of usuarios" style="border-bottom: 1px solid #f0f0f0;">
+                    <td style="padding: 15px; font-weight: bold;">{{ user.nombres }}</td>
+                    <td style="padding: 15px;">{{ user.apellidos }}</td>
+                    <td style="padding: 15px;">{{ user.id }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div *ngIf="vistaActual === 'staff' && !mostrarTickets">
+            <h2 class="card-title fw-bold mb-4" style="color: #0b1a30;">Gestión de Técnicos (Staff)</h2>
+            <div class="table-responsive" style="border: 1px solid #dee2e6; border-radius: 8px;">
+              <table class="table align-middle mb-0" style="background-color: white;">
+                <thead style="background-color: white; border-bottom: 2px solid #dee2e6;">
+                  <tr>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Nombre del Técnico</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Rol</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let tecnico of tecnicos" style="border-bottom: 1px solid #f0f0f0;">
+                    <td style="padding: 15px; font-weight: bold;">{{ tecnico.nombres }} {{ tecnico.apellidos }}</td>
+                    <td style="padding: 15px;">
+                      <span class="badge bg-primary" style="padding: 6px 15px; border-radius: 20px;">Técnico de Soporte</span>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="card border-0 shadow-sm" style="border-radius: 12px; width: 100%;"
-        *ngIf="vistaActual === 'usuarios' && !mostrarTickets">
-        <div class="card-body p-4 p-md-5">
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="card-title fw-bold mb-0" style="color: #0b1a30;">Gestión de Usuarios</h2>
-            <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario"
-              (click)="prepararRol('usuario')">
-              <i class="bi bi-person-plus-fill me-2"></i>Registrar Usuario
-            </button>
-          </div>
-
-          <div class="table-responsive" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
-            <table class="table align-middle mb-0" style="background-color: white;">
-              <thead style="background-color: #0b1a30; color: white;">
-                <tr>
-                  <th style="font-weight: 600; padding: 15px; border: none;">Nombre</th>
-                  <th style="font-weight: 600; padding: 15px; border: none;">Apellidos</th>
-                  <th style="font-weight: 600; padding: 15px; border: none;">Correo / Cuenta</th>
-                  <th style="font-weight: 600; padding: 15px; border: none;">ID / Identificador</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let usuario of usuarios" style="border-bottom: 1px solid #f0f0f0;">
-                  <td style="padding: 15px; color: #333; font-weight: bold;">{{ usuario.nombres }}</td>
-                  <td style="padding: 15px; color: #333;">{{ usuario.apellidos }}</td>
-                  <td style="padding: 15px; color: #555;">{{ usuario.correo }}</td>
-                  <td style="padding: 15px; color: #333;">{{ usuario.idUsuario }}</td>
-                </tr>
-                <tr *ngIf="usuarios.length === 0">
-                  <td colspan="4" class="text-center py-4 text-muted">No hay usuarios registrados.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
-      </div>
-
-      <div class="card border-0 shadow-sm" style="border-radius: 12px; width: 100%;"
-        *ngIf="vistaActual === 'staff' && !mostrarTickets">
-        <div class="card-body p-4 p-md-5">
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="card-title fw-bold mb-0" style="color: #0b1a30;">Gestión de Técnicos (Staff)</h2>
-            <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario"
-              (click)="prepararRol('tecnico')">
-              <i class="bi bi-shield-plus me-2"></i>Registrar Técnico
-            </button>
-          </div>
-
-          <div class="table-responsive" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
-            <table class="table align-middle mb-0" style="background-color: white;">
-              <thead style="background-color: #0b1a30; color: white;">
-                <tr>
-                  <th style="font-weight: 600; padding: 15px; border: none;">Nombre del Técnico</th>
-                  <th style="font-weight: 600; padding: 15px; border: none;">Correo / Cuenta</th>
-                  <th style="font-weight: 600; padding: 15px; border: none;">ID Interno</th>
-                  <th style="font-weight: 600; padding: 15px; border: none;">Rol</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let tecnico of tecnicos" style="border-bottom: 1px solid #f0f0f0;">
-                  <td style="padding: 15px; color: #333; font-weight: bold;">{{ tecnico.nombres }} {{ tecnico.apellidos
-                    }}</td>
-                  <td style="padding: 15px; color: #555;">{{ tecnico.correo }}</td>
-                  <td style="padding: 15px; color: #333;">{{ tecnico.idUsuario }}</td>
-                  <td style="padding: 15px;">
-                    <span
-                      style="background-color: #0d6efd; color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
-                      Técnico de Soporte
-                    </span>
-                  </td>
-                </tr>
-                <tr *ngIf="tecnicos.length === 0">
-                  <td colspan="4" class="text-center py-4 text-muted">No hay técnicos en el sistema.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="card border-0 shadow-sm flex-grow-1 d-flex align-items-center justify-content-center"
-        *ngIf="vistaActual === 'panel' && !mostrarTickets"
-        style="border-radius: 12px; background-color: white; min-height: 70vh;">
-        <div class="text-center text-muted p-5">
-          <h3 class="fw-bold mb-2" style="color: #334155; font-size: 1.75rem;">Panel de Administrador</h3>
-          <p style="color: #64748b; font-size: 1rem; max-width: 450px;">
-            Selecciona una opción del menú o abre los tickets para gestionar el sistema.
-          </p>
-        </div>
-      </div>
-
-    </main>
-  </div>
-</div>
-
-<div class="modal fade" id="modalNuevoUsuario" tabindex="-1" aria-labelledby="modalUsuarioTitulo" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
-      <div class="modal-header bg-primary text-white" style="border-radius: 12px 12px 0 0;">
-        <h5 class="modal-title fw-bold" id="modalUsuarioTitulo">Registrar Nueva Cuenta</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body p-4">
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold text-dark">Nombre(s)</label>
-            <input type="text" class="form-control" [(ngModel)]="nuevaCuenta.nombres" placeholder="Ej. Juan">
-          </div>
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold text-dark">Apellidos</label>
-            <input type="text" class="form-control" [(ngModel)]="nuevaCuenta.apellidos" placeholder="Ej. Pérez">
-          </div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold text-dark">ID Generado Automáticamente</label>
-          <input type="text" class="form-control bg-light fw-bold" [(ngModel)]="nuevaCuenta.idUsuario" readonly>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold text-dark">Usuario / Correo Electrónico</label>
-          <input type="email" class="form-control" [(ngModel)]="nuevaCuenta.correo" placeholder="usuario@empresa.com">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold text-dark">Contraseña Temporal</label>
-          <input type="password" class="form-control" [(ngModel)]="nuevaCuenta.contrasena"
-            placeholder="Contraseña segura">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold text-dark">Rol en el Sistema</label>
-          <select class="form-select" [(ngModel)]="nuevaCuenta.rol">
-            <option value="usuario">Usuario (Reporta problemas)</option>
-            <option value="tecnico">Técnico (Resuelve incidentes)</option>
-          </select>
-        </div>
-      </div>
-      <div class="modal-footer bg-light">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary fw-bold" (click)="registrarCuenta()">Guardar Cuenta</button>
       </div>
     </div>
   </div>

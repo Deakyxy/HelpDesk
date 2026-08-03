@@ -1,147 +1,141 @@
-<nav class="top-navbar" style="background-color: #0b1a30; padding: 10px 30px;">
-  <div class="nav-content" style="display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto;">
-    <h5 class="m-0 text-white">
-      Bienvenido Tenico: <span class="text-info">{{ usuario.nombres }} {{ usuario.apellidos }}</span>
-    </h5>
-    <button class="btn btn-danger text-white fw-semibold px-3 py-1 rounded-3 border-0" (click)="cerrarSesion()">
+<div style="display: flex; flex-direction: column; min-height: 100vh; background-color: #f4f6f9;">
+  
+  <nav style="background-color: #0b1a30; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
+    <span style="color: white; font-size: 1rem;">
+      Bienvenido, <span style="color: #38bdf8; font-weight: 600;">{{ usuario.nombres }} {{ usuario.apellidos }}</span>
+    </span>
+    <button class="btn btn-outline-danger fw-semibold px-4 py-1" style="border-radius: 6px;" (click)="cerrarSesion()">
       Cerrar Sesión
     </button>
-  </div>
-</nav>
+  </nav>
 
-<div class="sub-menu" style="background-color: #0056b3; padding: 10px 0;">
-  <div class="sub-menu-content" style="max-width: 1400px; margin: 0 auto; padding: 0 30px; display: flex; gap: 15px;">
-    <button class="btn border-0 rounded-pill px-4 py-1 fw-semibold" 
-            [ngClass]="mostrarTablas ? 'bg-dark text-white' : 'text-white bg-transparent'"
-            style="transition: background-color 0.3s;"
-            (click)="mostrarTablas = !mostrarTablas">
-      Mis Tickets
-    </button>
-    <button class="btn text-white border-0 bg-transparent rounded-pill px-4 py-1 fw-semibold"
-            style="transition: background-color 0.3s;">
-      Respuestas Personalizadas
-    </button>
-  </div>
-</div>
-
-<div class="main-container" style="background-color: #f4f6f9; min-height: calc(100vh - 180px);">
-  <div class="container-fluid py-4 px-lg-5">
+  <div style="display: flex; flex: 1;">
     
-    <div *ngIf="mostrarTablas">
-      <div class="card ticket-card border-0 shadow-sm" style="border-radius: 12px;">
-        <div class="card-body p-4">
+    <div style="width: 250px; background-color: #f4f6f9; border-right: 1px solid #dee2e6; padding-top: 20px;">
+      <button class="btn border-0 w-100 text-start" 
+              style="padding: 15px 30px; font-weight: 500; transition: background-color 0.2s;"
+              [ngStyle]="{'background-color': mostrarTablas ? '#e9ecef' : 'transparent', 'color': mostrarTablas ? '#0b1a30' : '#4f5d75'}"
+              (click)="mostrarTablas = !mostrarTablas">
+        Mis Tickets
+      </button>
+      <button class="btn border-0 w-100 text-start" style="padding: 15px 30px; color: #4f5d75; font-weight: 500;">
+        Respuestas Personalizadas
+      </button>
+    </div>
+
+    <div style="flex: 1; padding: 30px;">
+      <div class="card border-0 shadow-sm" style="border-radius: 12px; min-height: 80vh; background-color: white;">
+        <div class="card-body p-4 p-md-5" style="display: flex; flex-direction: column;">
           
-          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-            <div>
-              <h2 class="card-title fw-bold" style="color: #0b1a30;">Mis Tickets</h2>
-              <p class="text-muted mb-0">Aquí puedes ver los tickets que tienes asignado.</p>
+          <div *ngIf="!mostrarTablas" style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #4f5d75; text-align: center;">
+            <h2 class="fw-bold" style="color: #334155;">Panel de Técnico</h2>
+            <p>Selecciona "Mis Tickets" en el menú o abre los tickets para gestionar el sistema.</p>
+          </div>
+
+          <div *ngIf="mostrarTablas">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+              <div>
+                <h3 class="card-title fw-bold" style="color: #0b1a30;">Mis Tickets</h3>
+                <p class="text-muted mb-0">Aquí puedes ver los tickets que tienes asignados.</p>
+              </div>
+              <button class="btn btn-primary fw-bold px-4 py-2" style="border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#modalNuevoTicketTecnico">
+                Crear solicitud
+              </button>
+            </div>
+
+            <div class="mb-4">
+              <select class="form-select d-inline-block w-auto fw-bold" 
+                      [(ngModel)]="areaFiltro" 
+                      (change)="filtrarPorArea()"
+                      style="background-color: #e9f5ff; color: #0d6efd; border: none; border-radius: 6px; padding: 8px 35px 8px 15px; cursor: pointer; box-shadow: none;">
+                <option value="Todas" selected>Todas las Áreas</option>
+                <option value="Laboratorio de Sistemas">Laboratorio de Sistemas</option>
+                <option value="Laboratorio de Electrónica">Laboratorio de Electrónica</option>
+                <option value="Aulas Generales">Aulas Generales</option>
+                <option value="Oficinas Administrativas">Oficinas Administrativas</option>
+                <option value="Centro de Cómputo / Site">Centro de Cómputo / Site</option>
+              </select>
+            </div>
+
+            <h5 class="text-primary fw-bold mt-2 mb-3">Mi Fila de Trabajo (Activos)</h5>
+            <div class="table-responsive mb-5" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
+              <table class="table align-middle mb-0" style="background-color: white;">
+                <thead style="background-color: #0b1a30; color: white;">
+                  <tr>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Número</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Título</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Área</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Detalles</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Prioridad</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Estado</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let tarea of tareasActivas" style="border-bottom: 1px solid #f0f0f0;">
+                    <td class="fw-bold" style="padding: 15px;">#{{ tarea.correlativo || 'N/A' }}</td>
+                    <td class="fw-semibold" style="padding: 15px;">{{ tarea.titulo }}</td>
+                    <td style="padding: 15px;">{{ tarea.area }}</td>
+                    <td class="text-muted text-truncate" style="max-width: 250px; padding: 15px;">{{ tarea.comentario }}</td>
+                    <td style="padding: 15px;">
+                      <span class="badge" [ngClass]="{
+                          'bg-danger text-white': tarea.prioridad === 'Alta', 
+                          'bg-warning text-dark': tarea.prioridad === 'Media',
+                          'bg-success text-white': tarea.prioridad === 'Baja',
+                          'bg-secondary text-white': !tarea.prioridad
+                        }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
+                        {{ tarea.prioridad ? (tarea.prioridad | uppercase) : 'N/A' }}
+                      </span>
+                    </td>
+                    <td style="padding: 15px;">
+                      <span [ngClass]="tarea.estado === 'asignado' ? 'bg-primary text-white' : 'bg-secondary text-white'" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                        {{ tarea.estado === 'asignado' ? 'Asignado' : 'Por Cerrar' }}
+                      </span>
+                    </td>
+                    <td style="padding: 15px;">
+                      <button *ngIf="tarea.estado === 'asignado'" class="btn btn-sm btn-outline-success fw-bold" (click)="resolverTicket(tarea.id)">
+                        <i class="bi bi-check-circle"></i> Resolver
+                      </button>
+                      <span *ngIf="tarea.estado === 'por_cerrar'" class="text-muted" style="font-size: 0.85rem;">Esperando usuario</span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="tareasActivas.length === 0">
+                    <td colspan="7" class="text-center py-4 text-muted">No tienes tareas pendientes en esta área.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h5 class="text-secondary fw-bold mb-3">Historial de Trabajo (Resueltos)</h5>
+            <div class="table-responsive" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
+              <table class="table align-middle mb-0" style="background-color: white;">
+                <thead style="background-color: #6c757d; color: white;">
+                  <tr>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Número</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Título</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Área</th>
+                    <th style="font-weight: 600; padding: 15px; border: none;">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let tarea of tareasHistorial" style="border-bottom: 1px solid #f0f0f0;">
+                    <td class="fw-bold" style="padding: 15px;">#{{ tarea.correlativo || 'N/A' }}</td>
+                    <td class="fw-semibold" style="padding: 15px;">{{ tarea.titulo }}</td>
+                    <td style="padding: 15px;">{{ tarea.area }}</td>
+                    <td style="padding: 15px;"><span class="badge bg-secondary" style="padding: 6px 12px; border-radius: 20px;">Resuelto</span></td>
+                  </tr>
+                  <tr *ngIf="tareasHistorial.length === 0">
+                    <td colspan="4" class="text-center py-4 text-muted">Aún no has resuelto ningún ticket.</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             
-            <button class="btn btn-primary fw-bold px-4 py-2" style="border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#modalNuevoTicketTecnico">
-              Crear solicitud
-            </button>
-          </div>
-
-          <div class="mb-3">
-            <select class="form-select d-inline-block w-auto fw-bold" 
-                    [(ngModel)]="areaFiltro" 
-                    (change)="filtrarPorArea()"
-                    style="background-color: #e9f5ff; color: #0d6efd; border: none; border-radius: 6px; padding: 8px 35px 8px 15px; cursor: pointer; box-shadow: none;">
-              <option value="Todas" selected>Todas las Áreas</option>
-              <option value="Soporte de Hardware">Soporte de Hardware (Laptops, PCs, Periféricos)</option>
-              <option value="Software y Aplicaciones">Software y Aplicaciones (Errores, Instalaciones)</option>
-              <option value="Redes y Conectividad">Redes y Conectividad (Wi-Fi, VPN, Internet)</option>
-              <option value="Accesos y Credenciales">Accesos y Credenciales (Cuentas, Contraseñas, Permisos)</option>
-              <option value="Infraestructura y Servidores">Infraestructura y Servidores (Site, BD, Cloud)</option>
-              <option value="Seguridad Informática">Seguridad Informática (Antivirus, Incidencias)</option>
-              <option value="Telefonía y Comunicación">Telefonía y Comunicación (IP, Equipos de junta)</option>
-            </select>
-          </div>
-
-          <h5 class="text-primary fw-bold mt-4 mb-3">Mi Fila de Trabajo (Activos)</h5>
-          <div class="table-responsive mb-5" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
-            <table class="table align-middle mb-0" style="background-color: white;">
-              <thead style="background-color: #0b1a30; color: white;">
-                <tr>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Número</th>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Título</th>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Fecha</th>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Área</th>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Detalles</th>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Estado</th>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Acción</th>
-                  <th style="font-weight: 600; padding: 15px; border: none;">Prioridad</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let tarea of tareasActivas" style="border-bottom: 1px solid #f0f0f0;">
-                  <td class="fw-bold" style="padding: 15px;">#{{ tarea.correlativo || 'N/A' }}</td>
-                  <td class="fw-semibold" style="padding: 15px;">{{ tarea.titulo }}</td>
-                  <td style="padding: 15px; color: #555;">
-                    {{ (tarea.fecha_creacion && tarea.fecha_creacion.toDate ? (tarea.fecha_creacion.toDate() | date: 'dd/MM/yyyy') : 'Registrando...') }}
-                  </td>                  
-                  <td style="padding: 15px;">{{ tarea.area }}</td>
-                  <td class="text-muted text-truncate" style="max-width: 200px; padding: 15px;">{{ tarea.comentario }}</td>
-                  <td style="padding: 15px;">
-                    <span [ngClass]="tarea.estado === 'asignado' ? 'bg-warning text-dark' : 'bg-secondary text-white'" style="padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
-                      {{ tarea.estado === 'asignado' ? 'Asignado' : 'Por Cerrar' }}
-                    </span>
-                  </td>
-                  <td style="padding: 15px;">
-                    <button *ngIf="tarea.estado === 'asignado'" class="btn btn-sm btn-outline-success fw-bold" (click)="resolverTicket(tarea.id)">
-                      <i class="bi bi-check-circle"></i> Resolver
-                    </button>
-                    <span *ngIf="tarea.estado === 'por_cerrar'" class="text-muted" style="font-size: 0.85rem;">Esperando usuario</span>
-                  </td>
-                  <td style="padding: 15px;">
-                    <span class="badge" [ngClass]="{
-                        'bg-danger text-white': tarea.prioridad === 'Alta', 
-                        'bg-warning text-dark': tarea.prioridad === 'Media',
-                        'bg-success text-white': tarea.prioridad === 'Baja',
-                        'bg-secondary text-white': !tarea.prioridad
-                      }" style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem;">
-                      {{ tarea.prioridad ? (tarea.prioridad | uppercase) : 'N/A' }}
-                    </span>
-                  </td>
-                </tr>
-                <tr *ngIf="tareasActivas.length === 0">
-                  <td colspan="7" class="text-center py-4 text-muted">No tienes tareas asignadas pendientes en esta área.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h5 class="text-secondary fw-bold mb-3">Historial de Trabajo (Resueltos)</h5>
-          <div class="table-responsive" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
-            <table class="table align-middle mb-0" style="background-color: white;">
-              <thead style="background-color: #6c757d; color: white;">
-                <tr>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Número</th>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Título</th>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Fecha</th>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Área</th>
-                  <th style="font-weight: 600; padding: 12px 15px; border: none;">Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let tarea of tareasHistorial" style="border-bottom: 1px solid #f0f0f0;">
-                  <td class="fw-bold" style="padding: 15px;">#{{ tarea.correlativo || 'N/A' }}</td>
-                  <td class="fw-semibold" style="padding: 15px;">{{ tarea.titulo }}</td>
-                  <td style="padding: 15px; color: #555;">{{ (tarea.fecha_creacion?.toDate() | date: 'dd/MM/yyyy') || 'cargando' }}</td>
-                  <td style="padding: 15px;">{{ tarea.area }}</td>
-                  <td style="padding: 15px;"><span class="badge bg-secondary">Resuelto</span></td>
-                </tr>
-                <tr *ngIf="tareasHistorial.length === 0">
-                  <td colspan="5" class="text-center py-4 text-muted">Aún no has resuelto ningún ticket.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          
-        </div> 
+          </div> 
+        </div>
       </div>
-    </div> 
-
+    </div>
   </div>
 </div>
 
@@ -152,22 +146,7 @@
         <h5 class="modal-title fw-bold" id="tituloModalTecnico">Detalles del Nuevo Reporte</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-        <div class="modal-body p-4">
-        <div class="mb-3">
-          <label class="form-label fw-semibold text-dark">Título del Problema</label>
-          <input type="text" class="form-control" [(ngModel)]="nuevoTicket.titulo" placeholder="Ej. Falla crítica en servidor">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold text-dark">Área Afectada</label>
-          <select class="form-select" [(ngModel)]="nuevoTicket.area">
-            <option value="" disabled selected>Selecciona el área...</option>
-            <option value="Laboratorio de Sistemas">Laboratorio de Sistemas</option>
-            <option value="Laboratorio de Electrónica">Laboratorio de Electrónica</option>
-            <option value="Aulas Generales">Aulas Generales</option>
-            <option value="Oficinas Administrativas">Oficinas Administrativas</option>
-            <option value="Centro de Cómputo / Site">Centro de Cómputo / Site</option>
-          </select>
-        </div>
+      <div class="modal-body p-4">
         <div class="mb-3">
           <label class="form-label fw-semibold text-dark">Usuario Afectado</label>
           <select class="form-select" [(ngModel)]="nuevoTicket.idUsuarioAfectado">
@@ -178,12 +157,27 @@
           </select>
         </div>
         <div class="mb-3">
+          <label class="form-label fw-semibold text-dark">Título del Problema</label>
+          <input type="text" class="form-control" [(ngModel)]="nuevoTicket.titulo" placeholder="Ej. Falla crítica en servidor">
+        </div>
+        <div class="mb-3">
           <label class="form-label fw-semibold text-dark">Prioridad</label>
           <select class="form-select" [(ngModel)]="nuevoTicket.prioridad">
-            <option value="" disabled selected>Selecciona la prioridad</option>
+            <option value="" disabled selected>Selecciona la prioridad...</option>
             <option value="Alta">Alta</option>
             <option value="Media">Media</option>
             <option value="Baja">Baja</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-dark">Área Afectada</label>
+          <select class="form-select" [(ngModel)]="nuevoTicket.area">
+            <option value="" disabled selected>Selecciona el área...</option>
+            <option value="Laboratorio de Sistemas">Laboratorio de Sistemas</option>
+            <option value="Laboratorio de Electrónica">Laboratorio de Electrónica</option>
+            <option value="Aulas Generales">Aulas Generales</option>
+            <option value="Oficinas Administrativas">Oficinas Administrativas</option>
+            <option value="Centro de Cómputo / Site">Centro de Cómputo / Site</option>
           </select>
         </div>
         <div class="mb-3">
