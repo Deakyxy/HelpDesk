@@ -27,7 +27,7 @@ export class DashboardTecnicoComponent {
   todasLasTareasActivas: any[] = [];
   tareasActivas: any[] = [];
   tareasHistorial: any[] = [];
-  usuarios: any[] = []; // Arreglo que guardará la lista de usuarios del sistema
+  usuarios: any[] = [];
 
   nuevoTicket = {
     titulo: '',
@@ -42,7 +42,7 @@ export class DashboardTecnicoComponent {
       this.usuario.idusuario = history.state.idusuario;
       
       let loginCollection = collection(this.firestore, "Login"); 
-            let qLogin = query(loginCollection, where("idUsuario", "==", this.usuario.idusuario));
+      let qLogin = query(loginCollection, where("idUsuario", "==", this.usuario.idusuario));
       collectionData(qLogin).subscribe((datos: any[]) => {
         if (datos && datos.length > 0) {
           this.usuario.nombres = datos[0].nombres; 
