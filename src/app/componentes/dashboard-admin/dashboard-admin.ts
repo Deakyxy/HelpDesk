@@ -70,7 +70,7 @@ export class DashboardAdminComponent {
     }
   }
 
-  async asignar(idTicket: string, idTecnico: string, prioridadActualizada: string) {
+  asignar(idTicket: string, idTecnico: string, prioridadActualizada: string) {
     if (!idTicket || !idTecnico) {
       Swal.fire({
         icon: 'warning',
@@ -81,7 +81,6 @@ export class DashboardAdminComponent {
     }
 
     const prioridadFinal = prioridadActualizada || 'Baja';
-
     const tecnicoSeleccionado = this.tecnicos.find(t => t.id === idTecnico);
     let nombreCompleto = 'Técnico Asignado';
     
@@ -98,15 +97,15 @@ export class DashboardAdminComponent {
       didOpen: () => Swal.showLoading()
     });
 
-    try {
-      const ticketRef = doc(this.firestore, "Tickets", idTicket);
-      await updateDoc(ticketRef, {
-        id_tecnico: idTecnico,
-        nombre_tecnico: nombreCompleto, 
-        estado: "asignado",
-        prioridad: prioridadFinal
-      });
-      
+    const ticketRef = doc(this.firestore, "Tickets", idTicket);
+    
+    updateDoc(ticketRef, {
+      id_tecnico: idTecnico,
+      nombre_tecnico: nombreCompleto, 
+      estado: "asignado",
+      prioridad: prioridadFinal
+    })
+    .then(() => {
       Swal.fire({
         icon: 'success',
         title: '¡Asignación exitosa!',
@@ -114,13 +113,14 @@ export class DashboardAdminComponent {
         timer: 2000,
         showConfirmButton: false
       });
-    } catch (error) {
+    })
+    .catch((error) => {
       Swal.fire({
         icon: 'error',
         title: 'Error de base de datos',
         text: 'Ocurrió un error al intentar actualizar la asignación.'
       });
-    }
+    });
   }
 
   cerrarSesion() {
